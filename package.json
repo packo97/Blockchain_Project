@@ -1,0 +1,29 @@
+{
+    "name": "blockchain_project",
+    "version": "1.0.0",
+    "description": "Project for blockchain exam. It consists in a blockchain used for a voting system",
+    "main": "index.js",
+    "scripts": {
+        "test": "test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/packo97/Blockchain_Project.git"
+    },
+    "keywords": [
+        "Blockchain",
+        "Vote"
+    ],
+    "author": "Rodolfo and Pasquale",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/packo97/Blockchain_Project/issues"
+    },
+    "homepage": "https://github.com/packo97/Blockchain_Project#readme",
+    "dependencies": {
+        "symbol-sdk": "*",
+        "rxjs": "*",
+        "typescript": "*",
+        "ts-node": "*"
+    }
+}
