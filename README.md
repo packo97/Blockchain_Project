@@ -15,4 +15,4 @@ We want to develop a voting system powered by blockchain
 ### Shell on backend
 * docker exec -it (CONTAINER_ID) bash
 
-* **NOTE** to get container id use docker ps -a
+* **NOTE** to get container id use **docker ps -a**
