@@ -10,7 +10,7 @@ COPY . .
 # Expose port 3000
 EXPOSE 3000
 
-# Symbol cli dependencies
+# Symbol cli dependencies and typescript
 RUN npm install --global symbol-cli \
     npm install --global typescript \
     sudo npm install --global ts-node
