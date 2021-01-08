@@ -1,0 +1,21 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "Backend part of our project",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "serve": "nodemon index.js"
+    },
+    "author": "Rodolfo Pietro Calabrò",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.17.1",
+        "rxjs": "^6.6.3",
+        "supervisor": "^0.12.0",
+        "symbol-sdk": "^0.22.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7"
+    }
+}

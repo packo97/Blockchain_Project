@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "rxjs": "^6.6.3",
+    "symbol-sdk": "^0.22.2",
     "vue": "^2.6.11"
   },
   "devDependencies": {
