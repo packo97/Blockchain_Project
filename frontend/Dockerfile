@@ -8,6 +8,9 @@ WORKDIR /usr/src/frontend-app
 COPY package*.json /usr/src/frontend-app/
 RUN npm install
 
+# Install angular cli global
+RUN npm install -g @angular/cli
+
 # Create two volumes (solve problem of node_modules directory)
 VOLUME [ "/usr/src/frontend-app/node_modules", "/usr/src/frontend-app/" ]
 
