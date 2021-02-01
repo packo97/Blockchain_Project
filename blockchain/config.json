@@ -1,0 +1,9 @@
+{
+    "role": "client",
+    "knownHosts": [
+        "x",
+        "z",
+        "k"
+    ],
+    "address": "PUBLIC_ADDRESS"
+}

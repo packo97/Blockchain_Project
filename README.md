@@ -12,13 +12,14 @@ This protocol take the name from a simple italian dialect word.
 When in typical calabresian town the people see three friends in group,
 they often call it "i tri da chiazza".
 
-This cominication protocol part every joke is very simple and useful for a didactic purpose.
-To avoid problem with p2p, such as nat, firewalls hole punching, and a lot of staff...
+This cominication protocol a part every joke is very simple and useful for a didactic purpose.
+To avoid problem with p2p, such as nat, firewalls hole punching, and a lot of stuff...
 We make a simple choice/requirement.
 
 * Every organization that want to use our blockchain **MUST HAVE** at least 3 hosts with static ip.
 This 3 hosts are the main reference for all peers. This 3 hosts must be the main miners.
 * The infrustructure is easy scalable, but it must guarantee this 3 hosts.
+* This main 3 hosts are the reference for client and for miner
 
 
 # Run projects (INDIVIDUALY for dev purposes)
@@ -46,4 +47,4 @@ you can make operations easier
 2. source ./blockchain/env/bin/activate
 3. pip install --upgrade pip **ONLY if you have a version of pip NOT greater than 9.0.1**
 4. pip install -r ./blockchain/requirements.txt
-5. python ./blockchain/.. miner.py or client.py ...
+5. python ./blockchain/main.py **NOTE**: you must set properly configuration in **config.json** before run

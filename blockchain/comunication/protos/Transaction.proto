@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+service Transaction {
+  rpc sendTransaction (TransactionRequest) returns (TransactionResponse);
+}
+
+message TransactionRequest {
+  string time = 1;
+  string address = 2;
+  string event = 3;
+  string vote = 4;
+}
+
+message TransactionResponse {
+  bool valid = 1;
+}
