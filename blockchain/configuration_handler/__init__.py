@@ -1,2 +1,3 @@
-""" Handle configuration files using class
+"""
+Handle configuration files using class
 """

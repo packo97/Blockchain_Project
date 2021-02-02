@@ -1,33 +1,17 @@
+# Utils stuffs
 from concurrent import futures
 import logging
-
 import grpc
 
+# Proto generated files
 from comunication.grpc_protos import Transaction_pb2_grpc, Transaction_pb2
 
-"""
-Client stuffs
-"""
-class ClientTransactionHandler:
 
-    def __init__(self):
-        print("Client")
-        logging.basicConfig()
-
-    def sendTransaction(self, time, address, event, vote):
-        with grpc.insecure_channel('localhost:50051') as channel:
-            client = Transaction_pb2_grpc.TransactionStub(channel)
-            response = client.sendTransaction(Transaction_pb2.TransactionRequest(time=time, address=address, event=event, vote=vote))
-
-        return response
-
-"""
-Miner stuffs
-"""
 class TransactionService(Transaction_pb2_grpc.TransactionServicer):
 
     def sendTransaction(self, request, context):
         return Transaction_pb2.TransactionResponse(valid=True)
+
 
 class MinerTransactionHandler:
 

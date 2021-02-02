@@ -1,2 +1,3 @@
-"""Package that contains all comunications utils
+"""
+Package that contains all communications utils
 """
