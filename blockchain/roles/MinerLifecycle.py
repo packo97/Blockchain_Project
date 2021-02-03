@@ -3,7 +3,7 @@ Handle the lifecycle of a miner
 """
 
 # Transaction maker
-from comunication.Transactions.TransactionHandlerMiner import MinerTransactionHandler
+from comunication.transactions.TransactionHandlerMiner import MinerTransactionHandler
 
 
 def minerLifecycle(minerConfiguration):

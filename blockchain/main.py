@@ -3,21 +3,12 @@ import sys
 import re
 
 # Handle json configuration file
+from comunication.transactions.validation.TransactionValidator import isTransactionValid
 from configuration_handler.Config import Config
 
 # Lifecycles
 from roles.ClientLifecycle import clientLifecycle
 from roles.MinerLifecycle import minerLifecycle
-
-
-def isTransactionValid(event, vote):
-    """
-    Validate format of transactions
-    :param event: Event to vote
-    :param vote: Vote assign to event
-    :return: event is not null and vote is numeric
-    """
-    return len(event) > 0, vote.isnumeric()
 
 
 if __name__ == '__main__':
