@@ -19,9 +19,17 @@ class ClientTransactionHandler:
         print("Client")
         logging.basicConfig()
 
-    def sendTransaction(self, time, address, event, vote):
-        with grpc.insecure_channel('localhost:50051') as channel:
+    def sendTransaction(self, time, address, event, vote, host):
+        # Establish a connection channel with the host (the miner) and get response
+        with grpc.insecure_channel(host) as channel:
             client = Transaction_pb2_grpc.TransactionStub(channel)
-            response = client.sendTransaction(Transaction_pb2.TransactionRequest(time=time, address=address, event=event, vote=vote))
+
+            # Send transaction request and wait response
+            response = client.sendTransaction(
+                Transaction_pb2.TransactionRequest(time=time,
+                                                   address=address,
+                                                   event=event,
+                                                   vote=vote)
+            )
 
         return response

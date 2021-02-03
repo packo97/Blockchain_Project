@@ -5,7 +5,7 @@ import sys
 
 class Config:
     """
-    Class that handle config.json file
+    Class that handle configForClient.json file
 
     It contains all useful information about startup configuration
     """
@@ -21,7 +21,7 @@ class Config:
             configFile = open(configFilePath)
             self.configData = json.load(configFile)
 
-        # Impossible to open file (it not
+        # Impossible to open file (it doesn't exists)
         except Exception:
             print(f"Error on load {self.configFilePath} file", file=sys.stderr)
 
@@ -50,7 +50,7 @@ class Config:
         # In case of error in find key in json file
         except KeyError as keyError:
             print(
-                "You must set a list of known hosts in config.json file\n\t3 hosts if you run as a client\n\t2 hosts "
+                "You must set a list of known hosts in configForClient.json file\n\t3 hosts if you run as a client\n\t2 hosts "
                 "if you run as a miner",
                 file=sys.stderr)
             exit(1)
@@ -61,7 +61,7 @@ class Config:
         Get current user role (miner or client)
 
         We can choose to run as a miner or as a client only
-        changing config.json file
+        changing configForClient.json file
 
         :return: Kind of user/role (miner or client)
         """
@@ -80,7 +80,7 @@ class Config:
         # In case of error in find role key in json file
         except KeyError as keyError:
             print(
-                "You must set your role in config.json file to use our blockchain!\n\tminer if you want to mine with "
+                "You must set your role in configForClient.json file to use our blockchain!\n\tminer if you want to mine with "
                 "us\n\tclient if you want to be only a simple client",
                 file=sys.stderr)
             exit(1)
@@ -95,7 +95,8 @@ class Config:
 
         # In case of error in find address key in json file
         except Exception:
-            print("You must have an address to use our blockchain", file=sys.stderr)
+            print("You must have an address to use our blockchain. Set it on your configuration json file in field "
+                  "address", file=sys.stderr)
             exit(1)
 
     def __str__(self):

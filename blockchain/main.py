@@ -1,54 +1,65 @@
+# Utils modules
 import sys
+import re
 
-# Handle configuration file
+# Handle json configuration file
 from configuration_handler.Config import Config
 
-# Transaction maker
-from comunication.Transactions.TransactionHandlerClient import ClientTransactionHandler
-from comunication.Transactions.TransactionHandlerMiner import MinerTransactionHandler
+# Lifecycles
+from roles.ClientLifecycle import clientLifecycle
+from roles.MinerLifecycle import minerLifecycle
 
 
-def clientLifecycle(clientConfiguration):
+def isTransactionValid(event, vote):
     """
-    Lifecycle of a client
-
-    :param clientConfiguration: Configuration to pass
+    Validate format of transactions
+    :param event: Event to vote
+    :param vote: Vote assign to event
+    :return: event is not null and vote is numeric
     """
-    # Get informations
-    print(f"Run as a client...\n\nConfiruation:\n{clientConfiguration}\n")
-
-    # Init client transaction handler
-    clientTransactionHandler = ClientTransactionHandler()
-
-    # Send transaction
-    try:
-        print(clientTransactionHandler.sendTransaction(time="we", event="wee", vote="we", address="ouu"))
-
-    except Exception:
-        print("Impossible to send transaction", file=sys.stderr)
-
-
-def minerLifecycle(minerConfiguration):
-    """
-    Lifecycle of a miner
-
-    :param minerConfiguration: Configuration to pass
-    """
-    print(f"Run as a miner...\n\nConfiruation:\n{minerConfiguration}\n")
-    s = MinerTransactionHandler()
+    return len(event) > 0, vote.isnumeric()
 
 
 if __name__ == '__main__':
     """
     Main method
     """
-    # Fetch configuration
-    configuration = Config(configFilePath='config.json')
 
-    # Run as a Client
-    if configuration.getRole == "client":
-        clientLifecycle(clientConfiguration=configuration)
+    # Run main.py configuration_file_path.json ...eventual other_args...
+    # eventual other_args for client are event vote
+    if len(sys.argv) >= 2:
 
-    # Run as a Miner
-    if configuration.getRole == "miner":
-        minerLifecycle(minerConfiguration=configuration)
+        # Fetch configuration
+        configFilePath = sys.argv[1]
+        configuration = Config(configFilePath=configFilePath)
+
+        # Run as a Client
+        if configuration.getRole == "client":
+            # A client must sent a vote with a valid vote and valid event
+            try:
+                # Validate transaction with regex
+                event = sys.argv[2]
+                vote = sys.argv[3]
+                validFormatVote = isTransactionValid(event=event, vote=vote)
+
+                # If transaction is in a valid format event vote
+                if validFormatVote[0] and validFormatVote[1]:
+                    transactionContent = f"{event};{vote}"
+                    clientLifecycle(clientConfiguration=configuration,
+                                    event=event,
+                                    vote=vote,
+                                    address=configuration.getAddress())
+
+            # Not add event and vote in arguments
+            except IndexError as indexError:
+                print("You must pass vote and event to vote as a client.\n\tpython main.py "
+                      "configuration_file_path.json event vote\n"
+                      "(NOTE: order is important FIRST event, SECOND vote)", file=sys.stderr)
+
+        # Run as a Miner
+        if configuration.getRole == "miner":
+            minerLifecycle(minerConfiguration=configuration)
+
+    # Otherwise (we need a configuration file)
+    else:
+        print("You need to use a configuration json file to run application", file=sys.stderr)
