@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+
 
 @Component({
   selector: 'app-registration',
@@ -7,9 +10,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RegistrationComponent implements OnInit {
 
-  constructor() { }
+  codice_fiscale: string;
+  matricola: number;
+
+  constructor(private route : Router,private messageService: MessageService) { }
 
   ngOnInit() {
+  }
+
+  registrati(){
+    if(this.codice_fiscale!=null && this.matricola!=null)
+      this.route.navigate(['home']);
+    else
+    this.messageService.add({key:'notifica', severity:'error', summary:'Errore!', detail:'Inserisci i campi richiesti'});
   }
 
 }
