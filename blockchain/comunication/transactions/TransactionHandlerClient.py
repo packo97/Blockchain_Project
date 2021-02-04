@@ -20,6 +20,18 @@ class ClientTransactionHandler:
         logging.basicConfig()
 
     def sendTransaction(self, time, address, event, vote, host):
+        """
+        Sent transaction client side
+
+        :param time: Sending time of transaction
+        :param address: Of transaciton sender / voter
+        :param event: Event to vote
+        :param vote: Vote to assign to event
+        :param host: Host/Miner ip to send transaction
+
+        :return: response
+        """
+
         # Establish a connection channel with the host (the miner) and get response
         with grpc.insecure_channel(host) as channel:
             client = Transaction_pb2_grpc.TransactionStub(channel)
@@ -32,4 +44,5 @@ class ClientTransactionHandler:
                                                    vote=vote)
             )
 
+        # If correct return true, false otherwise
         return response
