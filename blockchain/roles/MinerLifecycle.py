@@ -14,6 +14,6 @@ def minerLifecycle(minerConfiguration):
     :param minerConfiguration: Configuration to pass
     """
     print(f"Run as a miner...\n\nConfiruation:\n{minerConfiguration}\n")
-    #s = MinerTransactionHandler()
+    s = MinerTransactionHandler(minerConfiguration=minerConfiguration)
     ledgerHandler = LedgerHandler('ledger.db')
     ledgerHandler.getAllEventVotedByAnAddress("evento", "address")

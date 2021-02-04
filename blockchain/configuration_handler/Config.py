@@ -99,6 +99,21 @@ class Config:
                   "address", file=sys.stderr)
             exit(1)
 
+    def getMinerPort(self):
+        """
+        Return the port that we used for running the miner
+
+        :return: The port of miner
+        """
+        try:
+            return self.configData["minerPort"]
+
+        # In case of error in find address key in json file
+        except Exception:
+            print("You must running a miner with a port, add minerPort field in configuration json file",
+                  file=sys.stderr)
+            exit(1)
+
     def __str__(self):
         """
         Stringify content of config file
