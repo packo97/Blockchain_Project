@@ -3,7 +3,7 @@ import sys
 import re
 
 # Handle json configuration file
-from comunication.transactions.validation.TransactionValidator import isTransactionValid
+from comunication.transactions.validation.TransactionValidator import TransactionValidator
 from configuration_handler.Config import Config
 
 # Lifecycles
@@ -31,15 +31,23 @@ if __name__ == '__main__':
                 # Validate transaction with regex
                 event = sys.argv[2]
                 vote = sys.argv[3]
-                validFormatVote = isTransactionValid(event=event, vote=vote)
+                validFormatVote = TransactionValidator.isTransactionFormatValid(event=event, vote=vote)
 
-                # If transaction is in a valid format event vote
+                # If transaction is in a valid format event vote (CLIENT VALIDATION)
                 if validFormatVote[0] and validFormatVote[1]:
                     transactionContent = f"{event};{vote}"
                     clientLifecycle(clientConfiguration=configuration,
                                     event=event,
                                     vote=vote,
                                     address=configuration.getAddress())
+
+                # Invalid event type
+                if not validFormatVote[0]:
+                    print("Invalid event format!", file=sys.stderr)
+
+                # Invalid vote type
+                if not validFormatVote[1]:
+                    print("Invalid vote format!", file=sys.stderr)
 
             # Not add event and vote in arguments
             except IndexError as indexError:
