@@ -44,10 +44,12 @@ if __name__ == '__main__':
                 # Invalid event type
                 if not validFormatVote[0]:
                     print("Invalid event format!", file=sys.stderr)
+                    exit(1)
 
                 # Invalid vote type
                 if not validFormatVote[1]:
                     print("Invalid vote format!", file=sys.stderr)
+                    exit(1)
 
             # Not add event and vote in arguments
             except IndexError as indexError:
