@@ -114,6 +114,21 @@ class Config:
                   file=sys.stderr)
             exit(1)
 
+    def getLedgerDatabasePath(self):
+        """
+        Return the path of sqlite3 ledger db
+
+        :return: The path of sqlite3 ledger db
+        """
+        try:
+            return self.configData["ledgerDatabasePath"]
+
+        # In case of error in find address key in json file
+        except Exception:
+            print("You must running a miner with a ledger file",
+                  file=sys.stderr)
+            exit(1)
+
     def __str__(self):
         """
         Stringify content of config file
