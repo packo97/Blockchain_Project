@@ -10,7 +10,7 @@ from threading import RLock, Condition
 from comunication.transactions.TransactionHandlerMiner import MinerTransactionHandler
 from ledger_handler.LedgerHandler import LedgerHandler
 from mining.MinerAlgorithm import MinerAlgorithm
-from comunication.mining.MiningWinningHandlerClient import MiningWinningHandlerClient
+from comunication.mining.BlockMiningWinningHandlerClient import MiningWinningHandlerClient
 
 def minerLifecycle(minerConfiguration):
     """
