@@ -4,13 +4,13 @@ Handle the lifecycle of a miner
 
 # Utils stuffs
 import asyncio
-from multiprocessing import RLock, Condition, Queue
+from threading import RLock, Condition
 
 # Transaction maker
 from comunication.transactions.TransactionHandlerMiner import MinerTransactionHandler
 from ledger_handler.LedgerHandler import LedgerHandler
 from mining.MinerAlgorithm import MinerAlgorithm
-
+from comunication.mining.MiningWinningHandlerClient import MiningWinningHandlerClient
 
 def minerLifecycle(minerConfiguration):
     """
@@ -23,7 +23,7 @@ def minerLifecycle(minerConfiguration):
     print(f"Run as a miner...\n\nConfiruation:\n{minerConfiguration}\n")
 
     # Init shared data
-    receivedTransactions = Queue()
+    receivedTransactions = []
     lock = RLock()
     startTransactionNumberThreshold = 1
 
@@ -35,19 +35,25 @@ def minerLifecycle(minerConfiguration):
     minerTransactionHandler = MinerTransactionHandler(minerConfiguration=minerConfiguration,
                                                       receivedTransactions=receivedTransactions,
                                                       lock=lock,
-                                                      minerCanStartToMiningCondition=minerCanStartToMiningCondition,
-                                                      startTransactionNumberThreshold=startTransactionNumberThreshold)
+                                                      #minerCanStartToMiningCondition=minerCanStartToMiningCondition,
+                                                      startTransactionNumberThreshold=startTransactionNumberThreshold
+                                                      )
 
     minerAlgorithm = MinerAlgorithm(minerConfiguration=minerConfiguration,
                                     receivedTransactions=receivedTransactions,
                                     lock=lock,
-                                    startTransactionNumberThreshold=startTransactionNumberThreshold,
-                                    minerCanStartToMiningCondition=minerCanStartToMiningCondition)
+                                    startTransactionNumberThreshold=startTransactionNumberThreshold
+                                    #minerCanStartToMiningCondition=minerCanStartToMiningCondition
+                                    )
+
+    miningWinningHandlerClient = MiningWinningHandlerClient(lock=lock)
+
 
     # Run serve and validate every transaction that arrive
     # asyncio.run(minerTransactionHandler.serve())
     minerTransactionHandler.start()
     minerAlgorithm.start()
+    miningWinningHandlerClient.start()
 
     # ledgerHandler = LedgerHandler(minerConfiguration.getLedgerDatabasePath())
     #ledgerHandler.getAllEventVotedByAnAddress("evento", "address")

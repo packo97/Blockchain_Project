@@ -4,7 +4,7 @@ import logging
 from time import sleep
 
 import grpc
-from multiprocessing import Process, RLock
+from threading import Thread, RLock
 import asyncio
 
 # Proto generated files
@@ -33,8 +33,7 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         self.receivedTransactions = receivedTransactions
         self.lock = lock
 
-    # def sendTransaction(self, request, context):
-    async def sendTransaction(self, request, context):
+    def sendTransaction(self, request, context):
         # By default we assume transaction false
         transactionValid = False
 
@@ -49,15 +48,14 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         validSemantic = eventVoted.fetchone() is None
 
         # Transaction is already sent (bad client)
-        # alreadySentToMiner = request in self.receivedTransactions
-        alreadySentToMiner = True
+        alreadySentToMiner = request in self.receivedTransactions
 
         # Final
         transactionValid = validSyntax and validSemantic and not alreadySentToMiner
 
         # Append to transactions
         if transactionValid:
-            self.receivedTransactions.put(request)
+            self.receivedTransactions.append(request)
 
         # if len(self.receivedTransactions) > 0:
         #     print(f"RECEIVED: {self.receivedTransactions[-1]}")
@@ -67,7 +65,7 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         return Transaction_pb2.TransactionResponse(valid=transactionValid)
 
 
-class MinerTransactionHandler(Process):
+class MinerTransactionHandler(Thread):
     """
     Class that handle miner transactions.
     It receive transaction and validate it
@@ -79,7 +77,7 @@ class MinerTransactionHandler(Process):
                  minerConfiguration,
                  receivedTransactions,
                  lock,
-                 minerCanStartToMiningCondition,
+                 #minerCanStartToMiningCondition,
                  startTransactionNumberThreshold):
         """
         Constructor with parameters
@@ -95,14 +93,14 @@ class MinerTransactionHandler(Process):
         self.minerConfiguration = minerConfiguration
         self.receivedTransactions = receivedTransactions
         self.lock = lock
-        self.minerCanStartToMiningCondition = minerCanStartToMiningCondition
+        #self.minerCanStartToMiningCondition = minerCanStartToMiningCondition
         self.startTransactionNumberThreshold = startTransactionNumberThreshold
 
         # Init logging
         logging.basicConfig()
 
         # Init thread
-        Process.__init__(self)
+        Thread.__init__(self)
 
     async def serve(self):
         server = grpc.aio.server()
@@ -129,22 +127,17 @@ class MinerTransactionHandler(Process):
         """
         Start server and waiting for transactions
         """
-        # try:
-        #     # self.lock.acquire()
-        #     # Waiting because we have to arrive to the threshold of transaction to mining
-        #     while len(self.receivedTransactions) > self.startTransactionNumberThreshold:
-        #         self.minerCanStartToMiningCondition.wait()
 
-        asyncio.run(self.serve())
-        # except:
-        #     pass
+        #asyncio.run(self.serve())
 
-            # server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-            # Transaction_pb2_grpc.add_TransactionServicer_to_server(
-            #     TransactionService(self.minerConfiguration,
-            #                        self.receivedTransactions),
-            #     server
-            # )
-            # server.add_insecure_port(f"[::]:{self.minerConfiguration.getMinerPort()}")
-            # server.start()
-            # server.wait_for_termination()
+
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        Transaction_pb2_grpc.add_TransactionServicer_to_server(
+            TransactionService(self.minerConfiguration,
+                               self.receivedTransactions,
+                               self.lock),
+            server
+        )
+        server.add_insecure_port(f"[::]:{self.minerConfiguration.getMinerPort()}")
+        server.start()
+        server.wait_for_termination()
