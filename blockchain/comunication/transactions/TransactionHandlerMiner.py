@@ -2,6 +2,7 @@
 from concurrent import futures
 import logging
 import grpc
+from threading import Thread, RLock
 
 # Proto generated files
 from comunication.grpc_protos import Transaction_pb2_grpc, Transaction_pb2
@@ -58,34 +59,45 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         return Transaction_pb2.TransactionResponse(valid=transactionValid)
 
 
-class MinerTransactionHandler:
+class MinerTransactionHandler(Thread):
     """
     Class that handle miner transactions.
+    It receive transaction and validate it
 
     It is the "server part" of transaction grpc protocol
     """
 
-    def serve(self):
+    def run(self):
         """
         Start server and waiting for transactions
         """
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        Transaction_pb2_grpc.add_TransactionServicer_to_server(TransactionService(self.minerConfiguration, self.receivedTransactions), server)
-        server.add_insecure_port(f"[::]:{self.minerConfiguration.getMinerPort()}")
-        server.start()
-        server.wait_for_termination()
+        with self.lock:
+            server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+            Transaction_pb2_grpc.add_TransactionServicer_to_server(
+                TransactionService(self.minerConfiguration,
+                                   self.receivedTransactions),
+                server
+            )
+            server.add_insecure_port(f"[::]:{self.minerConfiguration.getMinerPort()}")
+            server.start()
+            server.wait_for_termination()
 
-    def __init__(self, minerConfiguration, receivedTransactions):
+    def __init__(self, minerConfiguration, receivedTransactions, lock):
         """
         Constructor with parameters
 
         :param minerConfiguration: To use for finding informations about ports and other stuffs,...
         :param receivedTransactions: List of transaction received by the miner
+        :param lock: Re entrant lock used to handle shared data
         """
 
         # Init variables
         self.minerConfiguration = minerConfiguration
         self.receivedTransactions = receivedTransactions
+        self.lock = lock
 
         # Init logging
         logging.basicConfig()
+
+        # Init thread
+        Thread.__init__(self)
