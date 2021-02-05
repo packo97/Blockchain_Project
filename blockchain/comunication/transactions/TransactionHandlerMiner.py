@@ -77,7 +77,6 @@ class MinerTransactionHandler(Thread):
                  minerConfiguration,
                  receivedTransactions,
                  lock,
-                 #minerCanStartToMiningCondition,
                  startTransactionNumberThreshold):
         """
         Constructor with parameters
@@ -85,7 +84,6 @@ class MinerTransactionHandler(Thread):
         :param minerConfiguration: To use for finding informations about ports and other stuffs,...
         :param receivedTransactions: List of transaction received by the miner
         :param lock: Re entrant lock used to handle shared data
-        :param minerCanStartToMiningCondition: Condition that permit to start mining
         :param startTransactionNumberThreshold: Condition that permit to start mining
         """
 
@@ -93,7 +91,6 @@ class MinerTransactionHandler(Thread):
         self.minerConfiguration = minerConfiguration
         self.receivedTransactions = receivedTransactions
         self.lock = lock
-        #self.minerCanStartToMiningCondition = minerCanStartToMiningCondition
         self.startTransactionNumberThreshold = startTransactionNumberThreshold
 
         # Init logging
@@ -102,34 +99,10 @@ class MinerTransactionHandler(Thread):
         # Init thread
         Thread.__init__(self)
 
-    async def serve(self):
-        server = grpc.aio.server()
-        Transaction_pb2_grpc.add_TransactionServicer_to_server(
-            TransactionService(
-                self.minerConfiguration,
-                self.receivedTransactions,
-                self.lock),
-            server)
-        listen_addr = f'[::]:{self.minerConfiguration.getMinerPort()}'
-        server.add_insecure_port(listen_addr)
-        logging.info("Starting server on %s", listen_addr)
-        await server.start()
-        try:
-            await server.wait_for_termination()
-        except KeyboardInterrupt:
-            # Shuts down the server with 0 seconds of grace period. During the
-            # grace period, the server won't accept new connections and allow
-            # existing RPCs to continue within the grace period.
-            await server.stop(0)
-
-
     def run(self):
         """
         Start server and waiting for transactions
         """
-
-        #asyncio.run(self.serve())
-
 
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         Transaction_pb2_grpc.add_TransactionServicer_to_server(

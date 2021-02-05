@@ -25,32 +25,25 @@ def minerLifecycle(minerConfiguration):
     # Init shared data
     receivedTransactions = []
     lock = RLock()
-    startTransactionNumberThreshold = 1
-
-    # Useful conditions
-    # Condition that say "now we have get the threshold of transactions N and we can start minig"
-    minerCanStartToMiningCondition = Condition(lock)
+    thresholdToMine = 5
 
     # Collect transactions and validate every single when it arrive
     minerTransactionHandler = MinerTransactionHandler(minerConfiguration=minerConfiguration,
                                                       receivedTransactions=receivedTransactions,
                                                       lock=lock,
-                                                      #minerCanStartToMiningCondition=minerCanStartToMiningCondition,
-                                                      startTransactionNumberThreshold=startTransactionNumberThreshold
+                                                      startTransactionNumberThreshold=thresholdToMine
                                                       )
 
     minerAlgorithm = MinerAlgorithm(minerConfiguration=minerConfiguration,
                                     receivedTransactions=receivedTransactions,
                                     lock=lock,
-                                    startTransactionNumberThreshold=startTransactionNumberThreshold
-                                    #minerCanStartToMiningCondition=minerCanStartToMiningCondition
+                                    startTransactionNumberThreshold=thresholdToMine
                                     )
 
     miningWinningHandlerClient = MiningWinningHandlerClient(lock=lock)
 
 
     # Run serve and validate every transaction that arrive
-    # asyncio.run(minerTransactionHandler.serve())
     minerTransactionHandler.start()
     minerAlgorithm.start()
     miningWinningHandlerClient.start()

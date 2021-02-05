@@ -15,8 +15,7 @@ class MinerAlgorithm(Thread):
                  minerConfiguration,
                  receivedTransactions,
                  lock,
-                 startTransactionNumberThreshold,
-                 #minerCanStartToMiningCondition
+                 startTransactionNumberThreshold
                  ):
         """
         Constructor with parameters
@@ -26,7 +25,6 @@ class MinerAlgorithm(Thread):
         :param lock: Re entrant lock used to handle shared data
         :param startTransactionNumberThreshold: Say "start mining after you receive AT LEAST
         'startTransactionNumberThreshold' transactions"
-        :param minerCanStartToMiningCondition: Condition that permit to start mining
         """
 
         # Init variables
@@ -34,7 +32,6 @@ class MinerAlgorithm(Thread):
         self.receivedTransactions = receivedTransactions
         self.lock = lock
         self.startTransactionNumberThreshold = startTransactionNumberThreshold
-        #self.minerCanStartToMiningCondition = minerCanStartToMiningCondition
 
         # Init thread
         Thread.__init__(self)
@@ -47,10 +44,12 @@ class MinerAlgorithm(Thread):
         """
         while True:
             with self.lock:
+                # we are not ready to mine because we have not get the threshold
                 while len(self.receivedTransactions) < self.startTransactionNumberThreshold:
                     print("wait for mining")
                     sleep(3)
 
+                # now we can mine because we arrived to threshold
                 print("It's time to mine")
                 print(f"{self.receivedTransactions}")
 
@@ -59,12 +58,14 @@ class MinerAlgorithm(Thread):
                 sleep(3)
 
     def proofOfLottery(self):
-        minerAddress = hashlib.sha256(b"miner").hexdigest()
+        address = str.encode(self.minerConfiguration.getAddress())
+        minerAddress = hashlib.sha256(address).hexdigest()
         minerLotteryNumber = self.lottery(minerAddress)
 
-        print(f"Hash: {minerAddress} \n\tMiner lottery function: {minerLotteryNumber}")
+        print(f"Address hashed: {minerAddress} \n\tMiner lottery function: {minerLotteryNumber}")
 
-        transactionsString = "".join(str(self.receivedTransactions))
+        # our merkle
+        transactionsString = self.hashingTransactions(self.receivedTransactions)
         print(f"Transaction converted in string:\n\t{transactionsString}")
 
         seed = 0
@@ -78,13 +79,16 @@ class MinerAlgorithm(Thread):
         transactionsLotteryNumber = self.lottery(hashTransactions)
 
         # If the first try go bad we start with seed incrementation
-        while transactionsLotteryNumber!=minerLotteryNumber:
+        while transactionsLotteryNumber != minerLotteryNumber:
+            seed = seed + 1
             transactionsPlusSeed = str.encode(transactionsString+str(seed))
             hashTransactions = hashlib.sha256(transactionsPlusSeed).hexdigest()
             transactionsLotteryNumber = self.lottery(hashTransactions)
-            seed=seed+1
 
         print(f"Lottery function {transactionsLotteryNumber}    \n\tHash {hashTransactions} \n\tSeed: {seed} \n\tTransaction list plus seed: {transactionsPlusSeed.decode()}")
+
+        return transactionsLotteryNumber, hashTransactions, seed
+
 
     def lottery(self,address):
         sum = 0
@@ -94,3 +98,8 @@ class MinerAlgorithm(Thread):
             sum = sum + ord(i)
 
         return sum
+
+
+    def hashingTransactions(self, transactions):
+        # we have to implement markle algorithm
+        return "".join(str(transactions))
