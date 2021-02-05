@@ -40,7 +40,7 @@ class BlockMiningWinningHandlerClient(Thread):
                                                    block_hash = block_hash,
                                                    lottery_number = lottery_number,
                                                    miner_address = miner_address
-                                                    )
+                                                   ))
 
         # If correct return true, false otherwise
         return response

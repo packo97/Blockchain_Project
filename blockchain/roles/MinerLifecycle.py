@@ -10,7 +10,7 @@ from threading import RLock, Condition
 from comunication.transactions.TransactionHandlerMiner import MinerTransactionHandler
 from ledger_handler.LedgerHandler import LedgerHandler
 from mining.MinerAlgorithm import MinerAlgorithm
-from comunication.mining.BlockMiningWinningHandlerClient import MiningWinningHandlerClient
+from comunication.mining.BlockMiningWinningHandlerClient import BlockMiningWinningHandlerClient
 
 def minerLifecycle(minerConfiguration):
     """
@@ -40,7 +40,7 @@ def minerLifecycle(minerConfiguration):
                                     startTransactionNumberThreshold=thresholdToMine
                                     )
 
-    miningWinningHandlerClient = MiningWinningHandlerClient(lock=lock)
+    miningWinningHandlerClient = BlockMiningWinningHandlerClient(lock=lock)
 
 
     # Run serve and validate every transaction that arrive

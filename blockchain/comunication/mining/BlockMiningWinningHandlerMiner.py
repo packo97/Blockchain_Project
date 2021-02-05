@@ -8,6 +8,7 @@ from comunication.grpc_protos import BlockMining_pb2_grpc
 
 import grpc
 
+
 class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
     """
     Service used by grpc python implementation
