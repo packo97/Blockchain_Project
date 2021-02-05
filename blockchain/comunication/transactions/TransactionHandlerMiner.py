@@ -5,7 +5,6 @@ import grpc
 
 # Proto generated files
 from comunication.grpc_protos import Transaction_pb2_grpc, Transaction_pb2
-from comunication.transactions import minerReceivedTransactions
 from comunication.transactions.validation.TransactionValidator import TransactionValidator
 from ledger_handler.LedgerHandler import LedgerHandler
 
@@ -18,8 +17,16 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
     It transaction are valid (sintattically and semantically)
     """
 
-    def __init__(self, minerConfiguration):
+    def __init__(self, minerConfiguration, receivedTransactions):
+        """
+        COnstructor with parameters
+
+        :param minerConfiguration: To use for finding informations about ports and other stuffs,...
+        :param receivedTransactions: List of transaction received by the miner
+        """
+
         self.minerConfiguration = minerConfiguration
+        self.receivedTransactions = receivedTransactions
 
     def sendTransaction(self, request, context):
         # By default we assume transaction false
@@ -36,14 +43,16 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         validSemantic = eventVoted.fetchone() is None
 
         # Transaction is already sent (bad client)
-        alreadySentToMiner = request in minerReceivedTransactions
+        alreadySentToMiner = request in self.receivedTransactions
 
         # Final
         transactionValid = validSyntax and validSemantic and not alreadySentToMiner
 
         # Append to transactions
         if transactionValid:
-            minerReceivedTransactions.append(request)
+            self.receivedTransactions.append(request)
+
+        print(self.receivedTransactions)
 
         # Return transaction with result
         return Transaction_pb2.TransactionResponse(valid=transactionValid)
@@ -61,20 +70,22 @@ class MinerTransactionHandler:
         Start server and waiting for transactions
         """
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        Transaction_pb2_grpc.add_TransactionServicer_to_server(TransactionService(self.minerConfiguration), server)
+        Transaction_pb2_grpc.add_TransactionServicer_to_server(TransactionService(self.minerConfiguration, self.receivedTransactions), server)
         server.add_insecure_port(f"[::]:{self.minerConfiguration.getMinerPort()}")
         server.start()
         server.wait_for_termination()
 
-    def __init__(self, minerConfiguration):
+    def __init__(self, minerConfiguration, receivedTransactions):
         """
         Constructor with parameters
 
         :param minerConfiguration: To use for finding informations about ports and other stuffs,...
+        :param receivedTransactions: List of transaction received by the miner
         """
 
         # Init variables
         self.minerConfiguration = minerConfiguration
+        self.receivedTransactions = receivedTransactions
 
         # Init logging
         logging.basicConfig()

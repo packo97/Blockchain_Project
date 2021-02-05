@@ -17,8 +17,12 @@ def minerLifecycle(minerConfiguration):
     # Print informations about miner running
     print(f"Run as a miner...\n\nConfiruation:\n{minerConfiguration}\n")
 
-    # Listen transactions while it store N>=1 transactions
-    minerTransactionHandler = MinerTransactionHandler(minerConfiguration=minerConfiguration)
+    # Init shared data
+    receivedTransactions = []
+
+    # Collect transactions and validate every single when it arrive
+    minerTransactionHandler = MinerTransactionHandler(minerConfiguration=minerConfiguration,
+                                                      receivedTransactions=receivedTransactions)
 
     # Run serve and validate every transaction that arrive
     minerTransactionHandler.serve()
