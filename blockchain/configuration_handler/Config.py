@@ -55,7 +55,6 @@ class Config:
                 file=sys.stderr)
             exit(1)
 
-    @property
     def getRole(self):
         """
         Get current user role (miner or client)
@@ -105,14 +104,18 @@ class Config:
 
         :return: The port of miner
         """
-        try:
-            return self.configData["minerPort"]
 
-        # In case of error in find address key in json file
-        except Exception:
-            print("You must running a miner with a port, add minerPort field in configuration json file",
-                  file=sys.stderr)
-            exit(1)
+        # Only for miner
+        if self.configData["role"] == "miner":
+
+            try:
+                return self.configData["minerPort"]
+
+            # In case of error in find address key in json file
+            except Exception:
+                print("You must running a miner with a port, add minerPort field in configuration json file",
+                      file=sys.stderr)
+                exit(1)
 
     def getLedgerDatabasePath(self):
         """
@@ -120,14 +123,18 @@ class Config:
 
         :return: The path of sqlite3 ledger db
         """
-        try:
-            return self.configData["ledgerDatabasePath"]
 
-        # In case of error in find address key in json file
-        except Exception:
-            print("You must running a miner with a ledger file",
-                  file=sys.stderr)
-            exit(1)
+        # Only for miner
+        if self.configData["role"] == "miner":
+
+            try:
+                return self.configData["ledgerDatabasePath"]
+
+            # In case of error in find address key in json file
+            except Exception:
+                print("You must running a miner with a ledger file",
+                      file=sys.stderr)
+                exit(1)
 
     def __str__(self):
         """
@@ -136,9 +143,20 @@ class Config:
         """
 
         # Set all properties in a list
-        properties = [f"KNOWN_HOSTS: {self.getKnownHosts()}",
-                      f"ROLE: {self.getRole}",
-                      f"ADDRESS: {self.getAddress()}"]
+
+        # Only for miner
+        if self.configData["role"] == "miner":
+            properties = [f"KNOWN_HOSTS: {self.getKnownHosts()}",
+                          f"ROLE: {self.getRole()}",
+                          f"ADDRESS: {self.getAddress()}",
+                          f"MINER_PORT: {self.getMinerPort()}",
+                          f"LEDGER_PATH: {self.getLedgerDatabasePath()}"]
+
+        # Only for client
+        else:
+            properties = [f"KNOWN_HOSTS: {self.getKnownHosts()}",
+                          f"ROLE: {self.getRole()}",
+                          f"ADDRESS: {self.getAddress()}"]
 
         # Return all properties as a string (one property for every line)
         return "\n".join(properties)

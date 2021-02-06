@@ -1,3 +1,6 @@
+from mining.MinerAlgorithm import ProofOfLottery
+
+
 class MiningStatus:
     """
     Contains all useful shared data used by miner that
@@ -8,8 +11,23 @@ class MiningStatus:
         ...
     """
 
-    def __init__(self):
-        pass
+    def __init__(self,
+                 minerConfiguration,
+                 receivedTransactions,
+                 miningStartThreshold):
+        # Init by us
+        self.minerConfiguration = minerConfiguration
+        self.receivedTransactions = receivedTransactions
+        self.miningStartThreshold = miningStartThreshold
+
+        # Init by conditions / external events
+        self.canStartMining = len(self.receivedTransactions) >= self.miningStartThreshold
+        self.transactionReceivedNumber = len(self.receivedTransactions)
 
     def __str__(self):
-        pass
+
+        return f"{self.minerConfiguration}\n"\
+               f"RECEIVED TRANSACTIONS: \n{ProofOfLottery.stringifyTransactionList(self.receivedTransactions)}\n"\
+               f"START TO MINE AFTER: {self.miningStartThreshold}\n"\
+               f"CAN START MINING: {self.canStartMining}\n" \
+               f"NUMBER OF TRANSACTIONS RECEIVED: {self.transactionReceivedNumber}"

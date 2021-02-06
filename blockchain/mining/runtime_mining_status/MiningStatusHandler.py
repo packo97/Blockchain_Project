@@ -1,10 +1,10 @@
 # Utils stuffs
-from os import system
+import os
 from threading import Thread
 from time import sleep
 
 
-class MiningStatusReporter(Thread):
+class MiningStatusHandler(Thread):
     """
     Worker thread that print status of shared
     data every time.
@@ -14,7 +14,10 @@ class MiningStatusReporter(Thread):
     if another mine has win mining game, and so on...
     """
 
-    def __init__(self, lock, miningStatus):
+    def __init__(self,
+                 lock,
+                 miningStatus,
+                 canStartMiningCondition):
         """
         Constructor with parameters
 
@@ -22,6 +25,7 @@ class MiningStatusReporter(Thread):
         """
 
         self.lock = lock
+        self.canStartMiningCondition = canStartMiningCondition
         self.miningStatus = miningStatus
 
         # Init thread
@@ -33,7 +37,7 @@ class MiningStatusReporter(Thread):
         """
         print(f"{self.miningStatus}")
         print("\n\n")
-        # system("clear")
+        # os.system("clear")
         sleep(2)
 
     def handleMiningConfiguration(self):
@@ -45,6 +49,9 @@ class MiningStatusReporter(Thread):
 
         # We can start mining condition
         self.miningStatus.canStartMining = len(self.miningStatus.receivedTransactions) >= self.miningStatus.miningStartThreshold
+        if self.miningStatus.canStartMining:
+            self.canStartMiningCondition.notifyAll()
+
         self.miningStatus.transactionReceivedNumber = len(self.miningStatus.receivedTransactions)
 
     def run(self):
@@ -55,3 +62,4 @@ class MiningStatusReporter(Thread):
             with self.lock:
                 self.handleMiningConfiguration()
                 self.reportMiningConfiguration()
+            sleep(1)

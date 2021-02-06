@@ -21,7 +21,7 @@ def clientLifecycle(clientConfiguration, event, vote, address):
     """
 
     # Get informations
-    print(f"Run as a client...\n\nConfiruation:\n{clientConfiguration}\n")
+    print(f"Run as a client...\n\nConfiguration:\n{clientConfiguration}\n")
 
     # Init client transaction handler
     clientTransactionHandler = ClientTransactionHandler()
@@ -33,7 +33,7 @@ def clientLifecycle(clientConfiguration, event, vote, address):
     for minerHostAddress in clientConfiguration.getKnownHosts():
         try:
             # Get current timestamp
-            currentDateTime = datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+            currentDateTime = datetime.now().strftime("%d/%m/%Y,%H:%M:%S")
 
             # Get response status (try to send transaction)
             responseStatus = clientTransactionHandler.sendTransaction(time=currentDateTime,

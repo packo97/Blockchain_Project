@@ -1,9 +1,28 @@
 # Utils stuffs
+from datetime import datetime
 from threading import Thread
 from time import sleep
 import hashlib
 import random
 import sys
+
+
+class ProofOfLottery:
+
+    @staticmethod
+    def stringifyTransactionList(transactionList):
+        return ''.join(str(transaction) for transaction in transactionList)
+
+    @staticmethod
+    def calculate(minerAddress, receivedTransactions):
+        # hashed miner address
+        hashedMinerAddress = hashlib.sha256(str.encode(minerAddress)).hexdigest()
+
+        # Stringify transactions
+        receivedTransactionsString = ProofOfLottery.stringifyTransactionList(receivedTransactions)
+
+        return hashedMinerAddress, receivedTransactionsString
+
 
 
 class MinerAlgorithm(Thread):
@@ -12,26 +31,22 @@ class MinerAlgorithm(Thread):
     """
 
     def __init__(self,
-                 minerConfiguration,
-                 receivedTransactions,
+                 miningStatus,
                  lock,
-                 startTransactionNumberThreshold
+                 canStartMiningCondition
                  ):
         """
         Constructor with parameters
 
-        :param minerConfiguration: To use for finding informations about ports and other stuffs,...
-        :param receivedTransactions: List of transaction received by the miner
+        :param miningStatus: Shared current status of mining
         :param lock: Re entrant lock used to handle shared data
-        :param startTransactionNumberThreshold: Say "start mining after you receive AT LEAST
-        'startTransactionNumberThreshold' transactions"
+        :param canStartMiningCondition: Condition that told us to mining or sleep
         """
 
         # Init variables
-        self.minerConfiguration = minerConfiguration
-        self.receivedTransactions = receivedTransactions
+        self.miningStatus = miningStatus
         self.lock = lock
-        self.startTransactionNumberThreshold = startTransactionNumberThreshold
+        self.canStartMiningCondition = canStartMiningCondition
 
         # Init thread
         Thread.__init__(self)
@@ -45,32 +60,38 @@ class MinerAlgorithm(Thread):
         while True:
             with self.lock:
                 # we are not ready to mine because we have not get the threshold
-                while len(self.receivedTransactions) < self.startTransactionNumberThreshold:
-                    print("wait for mining")
-                    sleep(3)
+                while not self.miningStatus.canStartMining:
+                    self.canStartMiningCondition.wait()
 
                 # now we can mine because we arrived to threshold
-                print("It's time to mine")
-                print(f"{self.receivedTransactions}")
-
                 self.proofOfLottery()
-                self.receivedTransactions.clear()
-                sleep(3)
+
+                # ... Communicate solution to all ...
+
+                # Flush transaction list
+                self.miningStatus.receivedTransactions.clear()
 
     def proofOfLottery(self):
-        address = str.encode(self.minerConfiguration.getAddress())
+        """
+        Proof og lottery main cycle function
+
+        :return: All useful informations of a block mined
+        """
+
+        # Miner address hashed
+        address = str.encode(self.miningStatus.minerConfiguration.getAddress())
         minerAddress = hashlib.sha256(address).hexdigest()
+
+        # Lottery function on miner address function
         minerLotteryNumber = self.lottery(minerAddress)
 
-        print(f"Address hashed: {minerAddress} \n\tMiner lottery function: {minerLotteryNumber}")
-
         # our merkle
-        transactionsString = self.hashingTransactions(self.receivedTransactions)
-        print(f"Transaction converted in string:\n\t{transactionsString}")
+        transactionsString = self.hashingTransactions(self.miningStatus.receivedTransactions)
 
         seed = 0
 
-        # First try
+        # START ALGORITHM - First try
+
         # Transaction list converted in string + seed
         transactionsPlusSeed = str.encode(transactionsString+str(seed))
         hashTransactions = hashlib.sha256(transactionsPlusSeed).hexdigest()
@@ -80,14 +101,17 @@ class MinerAlgorithm(Thread):
 
         # If the first try go bad we start with seed incrementation
         while transactionsLotteryNumber != minerLotteryNumber:
+            # Increment seed
             seed = seed + 1
+
+            # Step ... N ...
             transactionsPlusSeed = str.encode(transactionsString+str(seed))
             hashTransactions = hashlib.sha256(transactionsPlusSeed).hexdigest()
             transactionsLotteryNumber = self.lottery(hashTransactions)
 
-        print(f"Lottery function {transactionsLotteryNumber}    \n\tHash {hashTransactions} \n\tSeed: {seed} \n\tTransaction list plus seed: {transactionsPlusSeed.decode()}")
+        # Return all useful data
 
-        return transactionsLotteryNumber, hashTransactions, seed
+        return datetime.now(), seed, transactionsString,
 
     def lottery(self, address):
         # Sum all
