@@ -6,10 +6,9 @@ Handle the lifecycle of a miner
 from threading import RLock, Condition
 
 # Transaction maker
-from comunication.mining.BlockMiningWinningHandlerServer import BlockMiningWinningHandlerServer
-from comunication.transactions.TransactionHandlerMiner import MinerTransactionHandler
-from mining.MinerAlgorithm import MinerAlgorithm, ProofOfLottery
-from comunication.mining.BlockMiningWinningHandlerClient import BlockMiningWinningHandlerClient
+from comunication.grpc_comunication_handlers.GrpcServerHandler import GrpcServerHandler
+
+from mining.MinerAlgorithm import MinerAlgorithm
 from mining.runtime_mining_status.MiningStatus import MiningStatus
 from mining.runtime_mining_status.MiningStatusHandler import MiningStatusHandler
 
@@ -33,8 +32,8 @@ def minerLifecycle(minerConfiguration):
     canStartMiningCondition = Condition(lock)
 
     # Workers
-    # Handle transactions (they arrive and he validate)
-    minerTransactionHandler = MinerTransactionHandler(
+    # Server thath handle grpc requests
+    grpcServerHandler = GrpcServerHandler(
         miningStatus=miningStatus,
         lock=lock
     )
@@ -53,25 +52,10 @@ def minerLifecycle(minerConfiguration):
         canStartMiningCondition=canStartMiningCondition
     )
 
-    # Listen if a block has win
-    blockMiningWinningHandlerServer = BlockMiningWinningHandlerServer(
-        miningStatus=miningStatus,
-        lock=lock
-    )
-
-    # Comunicate that a block has win
-    blockMiningWinningHandlerClient = BlockMiningWinningHandlerClient(
-        lock=lock
-    )
-
-    # miningWinningHandlerClient = BlockMiningWinningHandlerClient(lock=lock)
-
     # Run every thread ot miner lifecycle
-    # minerTransactionHandler.start()
-    # miningStatusReporter.start()
-    # minerAlgorithm.start()
-    blockMiningWinningHandlerServer.start()
-    blockMiningWinningHandlerClient.start()
+    grpcServerHandler.start()
+    miningStatusReporter.start()
+    minerAlgorithm.start()
 
     # ledgerHandler = LedgerHandler(minerConfiguration.getLedgerDatabasePath())
     # ledgerHandler.getAllEventVotedByAnAddress("event", "address")

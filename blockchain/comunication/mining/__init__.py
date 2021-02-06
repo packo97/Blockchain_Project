@@ -1,3 +1,0 @@
-"""
-Package that handle comunications
-"""

@@ -18,13 +18,12 @@ service BlockMining {
  */
 message BlockMiningRequest {
   string time = 1;
-  int32 seed = 2;
+  string seed = 2;
   string transactions_list = 3;
-  string transactions_hash = 4;
-  string block_hash = 5;
-  int32 lottery_number = 6;
-  string miner_address = 7;
-  string previous_block_hash = 8;
+  string block_hash = 4;
+  string lottery_number = 5;
+  string miner_address = 6;
+  string previous_block_hash = 7;
 }
 
 

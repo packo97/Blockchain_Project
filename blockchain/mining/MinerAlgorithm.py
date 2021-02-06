@@ -6,6 +6,7 @@ import hashlib
 import random
 import sys
 
+from comunication.grpc_clients_handlers.BlockMiningHandlerClient import BlockMiningHandlerClient
 from comunication.transactions.TransactionObject import TransactionObject
 
 
@@ -191,7 +192,6 @@ class MinerAlgorithm(Thread):
                 # Now we can mine because we arrived to threshold
                 proofOfLotteryResult = ProofOfLottery.calculate(minerAddress=self.miningStatus.minerConfiguration.getAddress(),
                                                                 receivedTransactions=self.miningStatus.receivedTransactions)
-                print(f"Mined\n{proofOfLotteryResult}")
 
                 # Make verification of our work (to pickle)
                 verify = ProofOfLottery.verify(seed=proofOfLotteryResult[1],
@@ -201,7 +201,19 @@ class MinerAlgorithm(Thread):
                                                minerAddress=proofOfLotteryResult[5],
                                                hashedMinerAddress=proofOfLotteryResult[6])
 
-                # Flush transaction list if all go well
+                # If mining go well
                 if verify:
+                    # Communicate win to miners
+                    blockMiningHandlerCLient = BlockMiningHandlerClient()
+                    blockMiningHandlerCLient.sendVictoryNotification(time=proofOfLotteryResult[0],
+                                                                     seed=str(proofOfLotteryResult[1]),
+                                                                     transactions_list=proofOfLotteryResult[2],
+                                                                     block_hash=proofOfLotteryResult[3],
+                                                                     lottery_number=str(proofOfLotteryResult[4]),
+                                                                     miner_address=proofOfLotteryResult[5],
+                                                                     previous_block_hash="prova",
+                                                                     host="localhost:50051")
+
+                    # Flush transaction lists
                     self.miningStatus.receivedTransactions.clear()
                     self.miningStatus.canStartMining = False

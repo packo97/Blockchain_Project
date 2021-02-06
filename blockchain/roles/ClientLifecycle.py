@@ -7,7 +7,7 @@ import sys
 from datetime import datetime
 
 # Transaction maker
-from comunication.transactions.TransactionHandlerClient import ClientTransactionHandler
+from comunication.grpc_clients_handlers.TransactionHandlerClient import ClientTransactionHandler
 
 
 def clientLifecycle(clientConfiguration, event, vote, address):

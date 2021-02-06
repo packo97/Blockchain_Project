@@ -13,4 +13,4 @@ class TransactionValidator:
         :param vote: Vote assign to event
         :return: event is not null and vote is numeric
         """
-        return len(event) > 0, vote.isnumeric()
+        return (len(event) > 0) and ('|' not in event), vote.isnumeric()

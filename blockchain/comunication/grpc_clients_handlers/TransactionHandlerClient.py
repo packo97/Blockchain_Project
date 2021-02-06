@@ -16,7 +16,6 @@ class ClientTransactionHandler:
         """
         Constructor without parameters
         """
-        print("Client")
         logging.basicConfig()
 
     def sendTransaction(self, time, address, event, vote, host):
