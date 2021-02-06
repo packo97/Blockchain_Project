@@ -23,9 +23,6 @@ def clientLifecycle(clientConfiguration, event, vote, address):
     # Get informations
     print(f"Run as a client...\n\nConfiguration:\n{clientConfiguration}\n")
 
-    # Init client transaction handler
-    clientTransactionHandler = ClientTransactionHandler()
-
     # Count the number of sending transactions
     sendingTransactionsCount = 0
 
@@ -36,7 +33,7 @@ def clientLifecycle(clientConfiguration, event, vote, address):
             currentDateTime = datetime.now().strftime("%d/%m/%Y,%H:%M:%S")
 
             # Get response status (try to send transaction)
-            responseStatus = clientTransactionHandler.sendTransaction(time=currentDateTime,
+            responseStatus = ClientTransactionHandler.sendTransaction(time=currentDateTime,
                                                                       event=event,
                                                                       vote=vote,
                                                                       address=address,

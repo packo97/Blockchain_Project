@@ -18,7 +18,8 @@ class ClientTransactionHandler:
         """
         logging.basicConfig()
 
-    def sendTransaction(self, time, address, event, vote, host):
+    @staticmethod
+    def sendTransaction(time, address, event, vote, host):
         """
         Sent transaction client side
 
