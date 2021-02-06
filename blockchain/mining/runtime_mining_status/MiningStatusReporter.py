@@ -1,5 +1,7 @@
 # Utils stuffs
 from threading import Thread
+from os import system
+from time import sleep
 
 
 class MiningStatusReporter(Thread):
@@ -26,5 +28,8 @@ class MiningStatusReporter(Thread):
         """
         Run method of thread
         """
-        with self.lock:
-            print(self.miningStatus)
+        while True:
+            with self.lock:
+                print(self.miningStatus)
+                system("clear")
+                sleep(1)

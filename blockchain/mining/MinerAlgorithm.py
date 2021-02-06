@@ -90,7 +90,14 @@ class MinerAlgorithm(Thread):
         return transactionsLotteryNumber, hashTransactions, seed
 
     def lottery(self, address):
-        return sum(list(map(ord, address)))
+        # Sum all
+        return sum(
+            # List all
+            list(
+                # Map ord function to each character of address
+                map(ord, address)
+            )
+        )
 
     def hashingTransactions(self, transactions):
         # we have to implement markle algorithm
