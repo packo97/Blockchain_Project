@@ -2,6 +2,10 @@
 from threading import Thread
 from time import sleep
 
+import logging
+
+import grpc
+
 # Proto generated stuffs
 from comunication.grpc_protos import BlockMining_pb2_grpc, BlockMining_pb2
 
@@ -19,6 +23,7 @@ class BlockMiningWinningHandlerClient(Thread):
 
         :param lock: Re entrant lock used to handle shared data
         """
+        logging.basicConfig()
 
         # Init re entrant lock
         self.lock = lock
@@ -33,8 +38,9 @@ class BlockMiningWinningHandlerClient(Thread):
 
         while True:
             with self.lock:
+                self.sendVictoryNotification("assa", 10, "sdfdadasdsasd", "sddfasdasds", "asdasdasdad", 123, "sasdasdasd","sdddfsdf")
                 print("Ho vinto")
-                sleep(3)
+                sleep(1)
 
     def sendVictoryNotification(self,
                                 time,
@@ -66,7 +72,7 @@ class BlockMiningWinningHandlerClient(Thread):
         """
 
         # Establish a connection channel with the host (the miner) and get response
-        with grpc.insecure_channel(host) as channel:
+        with grpc.insecure_channel("localhost:50051") as channel:
             client = BlockMining_pb2_grpc.BlockMiningStub(channel)
 
             # Send transaction request and wait response

@@ -19,16 +19,17 @@ class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
         pass
 
     def sendVictoryNotification(self, request, context):
-
+        print(request.transactions_list + "cacca")
+        print(request)
         return BlockMining_pb2_grpc.BlockMiningResponse(valid=True)
 
 
-class BlockMiningWinningHandlerMiner(Thread):
+class BlockMiningWinningHandlerServer(Thread):
     """
     Handle the communication service of block mining creation
-    with grpc api on miner side.
+    with grpc api on miner server side.
 
-    On miner side means that "miners are listening every time
+    On miner server side means that "miners are listening every time
     if a new block is created"
     After listening he proof that all is valid.
     In general a block is valid if:
@@ -37,13 +38,15 @@ class BlockMiningWinningHandlerMiner(Thread):
             such that: block_hash = hash(transactions_list+seed)
     """
 
-    def __init__(self, lock):
+    def __init__(self, lock, miningStatus):
         """
         Constructor with parameters
 
         :param lock: Re entrant lock used to handle shared data
+        :param miningStatus: Shared current status of mining
         """
         self.lock = lock
+        self.miningStatus = miningStatus
 
         # Init logging
         logging.basicConfig()
@@ -57,13 +60,11 @@ class BlockMiningWinningHandlerMiner(Thread):
         """
 
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        BlockMining_pb2_grpc.add_TransactionServicer_to_server(
-            BlockMiningService(
-                # pass paremeters
-            ),
+        BlockMining_pb2_grpc.add_BlockMiningServicer_to_server(
+            BlockMiningService(),
             server
         )
-        server.add_insecure_port(f"[::]:{self.minerConfiguration.getMinerPort()}")
+        server.add_insecure_port(f"[::]:{self.miningStatus.minerConfiguration.getMinerPort()}")
         server.start()
         server.wait_for_termination()
 

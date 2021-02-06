@@ -53,8 +53,11 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
                                                vote=request.vote)
         alreadySentToMiner = requestTransaction in self.miningStatus.receivedTransactions
 
+        # Already voter for event
+        alreadyVoted = request.event in [transaction.event for transaction in self.miningStatus.receivedTransactions]
+
         # Final
-        transactionValid = validSyntax and validSemantic and (not alreadySentToMiner)
+        transactionValid = validSyntax and validSemantic and (not alreadySentToMiner) and (not alreadyVoted)
 
         # Append to transactions
         if transactionValid:

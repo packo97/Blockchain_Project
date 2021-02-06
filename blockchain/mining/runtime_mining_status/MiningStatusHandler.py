@@ -35,10 +35,9 @@ class MiningStatusHandler(Thread):
         """
         Report mining configuration
         """
+        os.system("clear")
         print(f"{self.miningStatus}")
-        print("\n\n")
-        # os.system("clear")
-        sleep(2)
+        sleep(1)
 
     def handleMiningConfiguration(self):
         """

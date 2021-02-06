@@ -35,7 +35,7 @@ class TransactionObject:
         :return: String of transaction
         """
 
-        return f"({self.time};{self.address};{self.event};{self.vote})"
+        return f"{self.time};{self.address};{self.event};{self.vote}|"
 
     def __eq__(self, other):
         """

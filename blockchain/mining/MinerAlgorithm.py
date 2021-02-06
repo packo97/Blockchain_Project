@@ -6,23 +6,148 @@ import hashlib
 import random
 import sys
 
+from comunication.transactions.TransactionObject import TransactionObject
+
 
 class ProofOfLottery:
+    """
+    Implementation of proof of lottery
+    with validation.
+    Useful in two sides:
+        When miner do proof of lottery
+        When miner approve the proof of lottery of other miners
+    """
 
     @staticmethod
     def stringifyTransactionList(transactionList):
+        """
+        Stringify a list of transaction
+
+        :param transactionList: Transaction list to stringify
+        :return: String encooding of transactions
+        """
+
         return ''.join(str(transaction) for transaction in transactionList)
 
     @staticmethod
+    def deStringifyTransactionString(transactionListAsString):
+        """
+        Transform a string (that express a list of transactions)
+        in a list of TransactionObject.
+
+        It is useful because permit us to make simmetric difference
+        with respect to transactions we have.
+        Is possible in fact that a miner can mine before us a transactions
+        that we need to mine
+
+        :param transactionListAsString: List of transactions expressed as string
+
+        :return: List of TransactionObject
+        """
+
+        # Split by | and remove last element (because | is at the end and last one is empty)
+        transactionStringAsList = transactionListAsString.split('|')
+        transactionStringAsList.pop()
+
+        # List of transactions objects
+        transactionObjectList = []
+
+        # Enumerate transactions
+        for transaction in transactionStringAsList:
+            # Split transaction (0->timestamp, 1->address, 2->event, 3->vote)
+            item = transaction.split(';')
+            transactionObjectList.append(TransactionObject(item[0], item[1], item[2], item[3]))
+
+        return transactionObjectList
+
+    @staticmethod
+    def lottery(hashString):
+        """
+        Calculate lottery function over a hash string
+
+        :param hashString: Hash over calculate lottery function
+
+        :return: Lottery number
+        """
+
+        # Sum all
+        return sum(
+            # List all
+            list(map(ord, hashString))
+        )
+
+    @staticmethod
+    def verify(seed,
+               receivedTransactionsStringify,
+               blockHash,
+               lotteryFunctionBlockHash,
+               minerAddress,
+               hashedMinerAddress):
+        """
+        Verify if block is validate correctly by a miner
+
+        :return: True if yes, False if not
+        """
+
+        # Verify that hashed miner address is not created "as art"
+        correctMinerAddress = (hashlib.sha256(str.encode(minerAddress)).hexdigest() == hashedMinerAddress)
+
+        # Lottery is correct the same on hashed miner address and on lotteryFunctionBlockHash
+        correctLottery = (ProofOfLottery.lottery(hashedMinerAddress) == lotteryFunctionBlockHash)
+
+        # Correct calculated block hash
+        receivedTransactionsConcatSeed = receivedTransactionsStringify + str(seed)
+        correctBlockHash = (blockHash == hashlib.sha256(str.encode(receivedTransactionsConcatSeed)).hexdigest())
+
+        # Return final verify
+        return correctMinerAddress and correctLottery and correctBlockHash
+
+    @staticmethod
     def calculate(minerAddress, receivedTransactions):
+        """
+        Calculate Proof Of Lottery
+
+        :param minerAddress: Address of miner who do the proof of lottery
+        :param receivedTransactions: List of received received
+
+        :return:
+        """
+
         # hashed miner address
         hashedMinerAddress = hashlib.sha256(str.encode(minerAddress)).hexdigest()
 
+        # Lottery function over miner
+        lotteryFunctionOnMinerAddress = ProofOfLottery.lottery(hashedMinerAddress)
+
         # Stringify transactions
-        receivedTransactionsString = ProofOfLottery.stringifyTransactionList(receivedTransactions)
+        receivedTransactionsStringify = ProofOfLottery.stringifyTransactionList(receivedTransactions)
 
-        return hashedMinerAddress, receivedTransactionsString
+        # Main loop
+        foundCorrectSeed = False
+        seed = 0
+        while not foundCorrectSeed:
+            # Update seed
+            # INCREMENTAL
+            # seed = seed+1
+            # RANDOMLY
+            seed = random.randint(0, sys.maxsize)
 
+            # Concatenate received transaction string with seed
+            receivedTransactionsConcatSeed = receivedTransactionsStringify + str(seed)
+
+            # Try to construct block hash using seed and transactions
+            blockHash = hashlib.sha256(str.encode(receivedTransactionsConcatSeed)).hexdigest()
+
+            # Condition of winning
+            lotteryFunctionBlockHash = ProofOfLottery.lottery(blockHash)
+            if lotteryFunctionBlockHash == lotteryFunctionOnMinerAddress:
+                foundCorrectSeed = True
+
+        # When block is mined
+        currentDateTime = datetime.now().strftime("%d/%m/%Y,%H:%M:%S")
+
+        # Return useful data to create new block
+        return currentDateTime, seed, receivedTransactionsStringify, blockHash, lotteryFunctionBlockHash, minerAddress, hashedMinerAddress
 
 
 class MinerAlgorithm(Thread):
@@ -59,70 +184,24 @@ class MinerAlgorithm(Thread):
         """
         while True:
             with self.lock:
-                # we are not ready to mine because we have not get the threshold
+                # We are not ready to mine because we have not get the threshold
                 while not self.miningStatus.canStartMining:
                     self.canStartMiningCondition.wait()
 
-                # now we can mine because we arrived to threshold
-                self.proofOfLottery()
+                # Now we can mine because we arrived to threshold
+                proofOfLotteryResult = ProofOfLottery.calculate(minerAddress=self.miningStatus.minerConfiguration.getAddress(),
+                                                                receivedTransactions=self.miningStatus.receivedTransactions)
+                print(f"Mined\n{proofOfLotteryResult}")
 
-                # ... Communicate solution to all ...
+                # Make verification of our work (to pickle)
+                verify = ProofOfLottery.verify(seed=proofOfLotteryResult[1],
+                                               receivedTransactionsStringify=proofOfLotteryResult[2],
+                                               blockHash=proofOfLotteryResult[3],
+                                               lotteryFunctionBlockHash=proofOfLotteryResult[4],
+                                               minerAddress=proofOfLotteryResult[5],
+                                               hashedMinerAddress=proofOfLotteryResult[6])
 
-                # Flush transaction list
-                self.miningStatus.receivedTransactions.clear()
-
-    def proofOfLottery(self):
-        """
-        Proof og lottery main cycle function
-
-        :return: All useful informations of a block mined
-        """
-
-        # Miner address hashed
-        address = str.encode(self.miningStatus.minerConfiguration.getAddress())
-        minerAddress = hashlib.sha256(address).hexdigest()
-
-        # Lottery function on miner address function
-        minerLotteryNumber = self.lottery(minerAddress)
-
-        # our merkle
-        transactionsString = self.hashingTransactions(self.miningStatus.receivedTransactions)
-
-        seed = 0
-
-        # START ALGORITHM - First try
-
-        # Transaction list converted in string + seed
-        transactionsPlusSeed = str.encode(transactionsString+str(seed))
-        hashTransactions = hashlib.sha256(transactionsPlusSeed).hexdigest()
-
-        # Lottery function applied to hash
-        transactionsLotteryNumber = self.lottery(hashTransactions)
-
-        # If the first try go bad we start with seed incrementation
-        while transactionsLotteryNumber != minerLotteryNumber:
-            # Increment seed
-            seed = seed + 1
-
-            # Step ... N ...
-            transactionsPlusSeed = str.encode(transactionsString+str(seed))
-            hashTransactions = hashlib.sha256(transactionsPlusSeed).hexdigest()
-            transactionsLotteryNumber = self.lottery(hashTransactions)
-
-        # Return all useful data
-
-        return datetime.now(), seed, transactionsString,
-
-    def lottery(self, address):
-        # Sum all
-        return sum(
-            # List all
-            list(
-                # Map ord function to each character of address
-                map(ord, address)
-            )
-        )
-
-    def hashingTransactions(self, transactions):
-        # we have to implement markle algorithm
-        return "".join(str(transactions))
+                # Flush transaction list if all go well
+                if verify:
+                    self.miningStatus.receivedTransactions.clear()
+                    self.miningStatus.canStartMining = False
