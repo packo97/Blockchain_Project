@@ -1,0 +1,10 @@
+{
+    "role": "miner",
+    "knownHosts": [
+        "localhost:50052",
+        "localhost:50053"
+    ],
+    "address": "MINER_ADDRESS1",
+    "minerPort": "50051",
+    "ledgerDatabasePath": "ledger.db"
+}

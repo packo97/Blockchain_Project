@@ -5,5 +5,5 @@
         "localhost:50052",
         "localhost:50053"
     ],
-    "address": "PUBLIC_ADDRESS"
+    "address": "CLIENT_ADDRESS"
 }
