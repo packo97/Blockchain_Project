@@ -25,7 +25,7 @@ if __name__ == '__main__':
         configuration = Config(configFilePath=configFilePath)
 
         # Run as a Client
-        if configuration.getRole == "client":
+        if configuration.getRole() == "client":
             # A client must sent a vote with a valid vote and valid event
             try:
                 # Validate transaction syntax
@@ -35,7 +35,6 @@ if __name__ == '__main__':
 
                 # If transaction is in a valid format event vote (CLIENT VALIDATION)
                 if validFormatVote[0] and validFormatVote[1]:
-                    transactionContent = f"{event};{vote}"
                     clientLifecycle(clientConfiguration=configuration,
                                     event=event,
                                     vote=vote,
@@ -58,7 +57,7 @@ if __name__ == '__main__':
                       "(NOTE: order is important FIRST event, SECOND vote)", file=sys.stderr)
 
         # Run as a Miner
-        if configuration.getRole == "miner":
+        if configuration.getRole() == "miner":
             minerLifecycle(minerConfiguration=configuration)
 
     # Otherwise (we need a configuration file)
