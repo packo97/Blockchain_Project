@@ -20,7 +20,7 @@ def minerLifecycle(minerConfiguration):
     """
 
     # Print informations about miner running
-    print(f"Run as a miner...\n\nConfiruation:\n{minerConfiguration}\n")
+    # print(f"Run as a miner...\n\nConfiruation:\n{minerConfiguration}\n")
 
     # Init shared data
     receivedTransactions = []
@@ -42,11 +42,10 @@ def minerLifecycle(minerConfiguration):
 
     miningWinningHandlerClient = BlockMiningWinningHandlerClient(lock=lock)
 
-
-    # Run serve and validate every transaction that arrive
+    # Run every thread ot miner lifecycle
     minerTransactionHandler.start()
     minerAlgorithm.start()
     miningWinningHandlerClient.start()
 
     # ledgerHandler = LedgerHandler(minerConfiguration.getLedgerDatabasePath())
-    #ledgerHandler.getAllEventVotedByAnAddress("evento", "address")
+    # ledgerHandler.getAllEventVotedByAnAddress("event", "address")

@@ -1,33 +1,48 @@
+# Utils stuffs
+import grpc
+
 from concurrent import futures
 import logging
 
 from threading import Thread
-from time import sleep
 
+# Proto generated stuffs
 from comunication.grpc_protos import BlockMining_pb2_grpc
-
-import grpc
 
 
 class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
     """
-    Service used by grpc python implementation
-
-    A miner receive transactions and validate it.
-    It transaction are valid (sintattically and semantically)
+    Implementation of grpc BlockMiningService
     """
 
     def __init__(self):
         pass
 
     def sendVictoryNotification(self, request, context):
+
         return BlockMining_pb2_grpc.BlockMiningResponse(valid=True)
 
 
 class BlockMiningWinningHandlerMiner(Thread):
+    """
+    Handle the communication service of block mining creation
+    with grpc api on miner side.
 
-    def __init__(self,lock):
+    On miner side means that "miners are listening every time
+    if a new block is created"
+    After listening he proof that all is valid.
+    In general a block is valid if:
 
+        lottery(hash(miner_address)) = lottery(hash(block_hash)) = lottery_number
+            such that: block_hash = hash(transactions_list+seed)
+    """
+
+    def __init__(self, lock):
+        """
+        Constructor with parameters
+
+        :param lock: Re entrant lock used to handle shared data
+        """
         self.lock = lock
 
         # Init logging
@@ -35,7 +50,6 @@ class BlockMiningWinningHandlerMiner(Thread):
 
         # Init thread
         Thread.__init__(self)
-
 
     def run(self):
         """

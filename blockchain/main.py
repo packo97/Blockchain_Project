@@ -28,7 +28,7 @@ if __name__ == '__main__':
         if configuration.getRole == "client":
             # A client must sent a vote with a valid vote and valid event
             try:
-                # Validate transaction with regex
+                # Validate transaction syntax
                 event = sys.argv[2]
                 vote = sys.argv[3]
                 validFormatVote = TransactionValidator.isTransactionFormatValid(event=event, vote=vote)
