@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11\x42lockMining.proto\"\xa9\x01\n\x12\x42lockMiningRequest\x12\x0c\n\x04time\x18\x01 \x01(\t\x12\x0c\n\x04seed\x18\x02 \x01(\x05\x12\x19\n\x11transactions_list\x18\x03 \x01(\t\x12\x19\n\x11transactions_hash\x18\x04 \x01(\t\x12\x12\n\nblock_hash\x18\x05 \x01(\t\x12\x16\n\x0elottery_number\x18\x06 \x01(\x05\x12\x15\n\rminer_address\x18\x07 \x01(\t\"$\n\x13\x42lockMiningResponse\x12\r\n\x05valid\x18\x01 \x01(\x08\x32S\n\x0b\x42lockMining\x12\x44\n\x17sendVictoryNotification\x12\x13.BlockMiningRequest\x1a\x14.BlockMiningResponseb\x06proto3'
+  serialized_pb=b'\n\x11\x42lockMining.proto\"\xc6\x01\n\x12\x42lockMiningRequest\x12\x0c\n\x04time\x18\x01 \x01(\t\x12\x0c\n\x04seed\x18\x02 \x01(\x05\x12\x19\n\x11transactions_list\x18\x03 \x01(\t\x12\x19\n\x11transactions_hash\x18\x04 \x01(\t\x12\x12\n\nblock_hash\x18\x05 \x01(\t\x12\x16\n\x0elottery_number\x18\x06 \x01(\x05\x12\x15\n\rminer_address\x18\x07 \x01(\t\x12\x1b\n\x13previous_block_hash\x18\x08 \x01(\t\"$\n\x13\x42lockMiningResponse\x12\r\n\x05valid\x18\x01 \x01(\x08\x32S\n\x0b\x42lockMining\x12\x44\n\x17sendVictoryNotification\x12\x13.BlockMiningRequest\x1a\x14.BlockMiningResponseb\x06proto3'
 )
 
 
@@ -82,6 +82,13 @@ _BLOCKMININGREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='previous_block_hash', full_name='BlockMiningRequest.previous_block_hash', index=7,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -95,7 +102,7 @@ _BLOCKMININGREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=22,
-  serialized_end=191,
+  serialized_end=220,
 )
 
 
@@ -126,8 +133,8 @@ _BLOCKMININGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=193,
-  serialized_end=229,
+  serialized_start=222,
+  serialized_end=258,
 )
 
 DESCRIPTOR.message_types_by_name['BlockMiningRequest'] = _BLOCKMININGREQUEST
@@ -157,8 +164,8 @@ _BLOCKMINING = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=231,
-  serialized_end=314,
+  serialized_start=260,
+  serialized_end=343,
   methods=[
   _descriptor.MethodDescriptor(
     name='sendVictoryNotification',

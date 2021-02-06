@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 /**
-  * Block Mining service. It permit to told a block is mined
+  * Block Mining service. It permit to say that
+  * "A block is mined"
  */
 service BlockMining {
   /**
@@ -13,7 +14,7 @@ service BlockMining {
 
 
 /**
-  * Request that told us "a block is mined".
+  * Request that told us "A block is mined".
  */
 message BlockMiningRequest {
   string time = 1;
@@ -23,11 +24,15 @@ message BlockMiningRequest {
   string block_hash = 5;
   int32 lottery_number = 6;
   string miner_address = 7;
+  string previous_block_hash = 8;
 }
 
 
 /**
-  * Block response. It is sent by miners that approved or not the validation by the miner who send block mining request
+  * Block response.
+  * It is sent by miners that approved or not
+  * the validation by the miner who send block
+  * mining request
  */
 message BlockMiningResponse {
   bool valid = 1;

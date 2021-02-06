@@ -7,7 +7,8 @@ import comunication.grpc_protos.BlockMining_pb2 as BlockMining__pb2
 
 class BlockMiningStub(object):
     """*
-    Block Mining service. It permit to told a block is mined
+    Block Mining service. It permit to say that
+    "A block is mined"
     """
 
     def __init__(self, channel):
@@ -25,7 +26,8 @@ class BlockMiningStub(object):
 
 class BlockMiningServicer(object):
     """*
-    Block Mining service. It permit to told a block is mined
+    Block Mining service. It permit to say that
+    "A block is mined"
     """
 
     def sendVictoryNotification(self, request, context):
@@ -53,7 +55,8 @@ def add_BlockMiningServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class BlockMining(object):
     """*
-    Block Mining service. It permit to told a block is mined
+    Block Mining service. It permit to say that
+    "A block is mined"
     """
 
     @staticmethod
