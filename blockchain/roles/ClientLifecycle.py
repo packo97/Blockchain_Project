@@ -7,7 +7,7 @@ import sys
 from datetime import datetime
 
 # Transaction maker
-from comunication.grpc_clients_handlers.TransactionHandlerClient import ClientTransactionHandler
+from comunication.grpc_clients_handlers.TransactionHandlerClient import TransactionHandlerClient
 
 
 def clientLifecycle(clientConfiguration, event, vote, address):
@@ -33,7 +33,7 @@ def clientLifecycle(clientConfiguration, event, vote, address):
             currentDateTime = datetime.now().strftime("%d/%m/%Y,%H:%M:%S")
 
             # Get response status (try to send transaction)
-            responseStatus = ClientTransactionHandler.sendTransaction(time=currentDateTime,
+            responseStatus = TransactionHandlerClient.sendTransaction(time=currentDateTime,
                                                                       event=event,
                                                                       vote=vote,
                                                                       address=address,

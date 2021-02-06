@@ -21,8 +21,8 @@ class BlockMiningHandlerClient:
         """
         logging.basicConfig()
 
-    def sendVictoryNotification(self,
-                                time,
+    @staticmethod
+    def sendVictoryNotification(time,
                                 seed,
                                 transactions_list,
                                 block_hash,

@@ -204,15 +204,15 @@ class MinerAlgorithm(Thread):
                 # If mining go well
                 if verify:
                     # Communicate win to miners
-                    blockMiningHandlerCLient = BlockMiningHandlerClient()
-                    blockMiningHandlerCLient.sendVictoryNotification(time=proofOfLotteryResult[0],
-                                                                     seed=str(proofOfLotteryResult[1]),
-                                                                     transactions_list=proofOfLotteryResult[2],
-                                                                     block_hash=proofOfLotteryResult[3],
-                                                                     lottery_number=str(proofOfLotteryResult[4]),
-                                                                     miner_address=proofOfLotteryResult[5],
-                                                                     previous_block_hash="prova",
-                                                                     host="localhost:50051")
+                    for host in self.miningStatus.minerConfiguration.getKnownHosts():
+                        BlockMiningHandlerClient.sendVictoryNotification(time=proofOfLotteryResult[0],
+                                                                         seed=str(proofOfLotteryResult[1]),
+                                                                         transactions_list=proofOfLotteryResult[2],
+                                                                         block_hash=proofOfLotteryResult[3],
+                                                                         lottery_number=str(proofOfLotteryResult[4]),
+                                                                         miner_address=proofOfLotteryResult[5],
+                                                                         previous_block_hash="prova",
+                                                                         host=host)
 
                     # Flush transaction lists
                     self.miningStatus.receivedTransactions.clear()

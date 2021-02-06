@@ -7,7 +7,7 @@ import grpc
 from comunication.grpc_protos import Transaction_pb2_grpc, Transaction_pb2
 
 
-class ClientTransactionHandler:
+class TransactionHandlerClient:
     """
     Handle transaction by client view (client must only to send transactions)
     """
