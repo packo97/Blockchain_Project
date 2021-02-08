@@ -1,5 +1,7 @@
 import sqlite3
 
+from mining.MinerAlgorithm import ProofOfLottery
+
 
 class LedgerHandler:
     """
@@ -63,7 +65,42 @@ class LedgerHandler:
         return result
 
     def insertBlockInLedger(self, block):
-        pass
+        """
+        Insert a block in blockchain
+
+        :param block: Block to add in ledger
+
+        """
+
+        # De stringify block hash
+        transactionObjectsList = ProofOfLottery.deStringifyTransactionString(block.transactions_list)
+
+        # Get previous block hash
+        block.previous_block_hash = self.getPreviousBlockHash().fetchone()[0]
+
+        #  Query for add block
+        addBlockQuery = f"INSERT INTO Block(hash, seed, miner_address, lottery_number, previous_hash, timestamp_block) "\
+                f"VALUES ('{block.block_hash}',"\
+                f"{block.seed},"\
+                f"'{block.miner_address}',"\
+                f"'{block.lottery_number}',"\
+                f"'{block.previous_block_hash}',"\
+                f"'{block.time}')"
+
+        self.databaseCursor.execute(addBlockQuery)
+
+        # Query for add transactions
+        for transaction in transactionObjectsList:
+            addTransactionQuery = f"INSERT INTO 'Transaction' (timestamp_transaction, event, vote, address, block_hash) "\
+                                  f"VALUES ('{transaction.time}', '{transaction.event}', " \
+                                  f"{transaction.vote}, " \
+                                  f"'{transaction.address}', " \
+                                  f"'{block.block_hash}')"
+
+            self.databaseCursor.execute(addTransactionQuery)
+
+        # Final commit
+        self.connection.commit()
 
     # ********** Useful operations for query blockchain (ex: view all transaction for a predefined event...) **********
 
