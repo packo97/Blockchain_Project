@@ -48,3 +48,11 @@ you can make operations easier
 3. pip install --upgrade pip **ONLY if you have a version of pip NOT greater than 9.0.1**
 4. pip install -r ./blockchain/requirements.txt
 5. python ./blockchain/main.py **NOTE**: you must set properly configuration in **config.json** before run
+
+## Generate genesis in ledger
+* INSERT INTO Block (hash, seed, miner_address, lottery_number, previous_hash, timestamp_block) 
+VALUES ('656ffd143ab4f1d3074aa7db58feeb571a700824bd061f7f18d2b07b5be34f2c', 523139852477692024, 'rodolfo_pasquale', 4610, 'genesis', '01/01/0001,00:00:00')
+
+* INSERT INTO "Transaction" (timestamp_transaction, event, vote, address, block_hash) 
+VALUES ('01/01/0001,00:00:00', 'genesis_event', 42, 'rodolfo_pasquale', '656ffd143ab4f1d3074aa7db58feeb571a700824bd061f7f18d2b07b5be34f2c')
+
