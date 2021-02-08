@@ -6,6 +6,7 @@ import hashlib
 import random
 import sys
 
+from comunication.blocks.BlockMiningObject import BlockMiningObject
 from comunication.grpc_clients_handlers.BlockMiningHandlerClient import BlockMiningHandlerClient
 from comunication.transactions.TransactionObject import TransactionObject
 
@@ -193,7 +194,7 @@ class MinerAlgorithm(Thread):
                 proofOfLotteryResult = ProofOfLottery.calculate(minerAddress=self.miningStatus.minerConfiguration.getAddress(),
                                                                 receivedTransactions=self.miningStatus.receivedTransactions)
 
-                # Make verification of our work (to pickle)
+                # Make verification of our work (to pickle, AUTO VERIFY)
                 verify = ProofOfLottery.verify(seed=proofOfLotteryResult[1],
                                                receivedTransactionsStringify=proofOfLotteryResult[2],
                                                blockHash=proofOfLotteryResult[3],
@@ -201,19 +202,39 @@ class MinerAlgorithm(Thread):
                                                minerAddress=proofOfLotteryResult[5],
                                                hashedMinerAddress=proofOfLotteryResult[6])
 
-                # If mining go well
+
+                # Get previous block hash
+                from ledger_handler.LedgerHandler import LedgerHandler
+                ledgerHandler = LedgerHandler(self.miningStatus.minerConfiguration.getLedgerDatabasePath())
+                previousBlockHash = ledgerHandler.getPreviousBlockHash().fetchone()[0]
+
+                # If mining go well (FOR US)
                 if verify:
                     # Communicate win to miners
                     for host in self.miningStatus.minerConfiguration.getKnownHosts():
-                        BlockMiningHandlerClient.sendVictoryNotification(time=proofOfLotteryResult[0],
-                                                                         seed=str(proofOfLotteryResult[1]),
-                                                                         transactions_list=proofOfLotteryResult[2],
-                                                                         block_hash=proofOfLotteryResult[3],
-                                                                         lottery_number=str(proofOfLotteryResult[4]),
-                                                                         miner_address=proofOfLotteryResult[5],
-                                                                         previous_block_hash="prova",
-                                                                         host=host)
+                        # Validate verify
+                        verify = verify and BlockMiningHandlerClient.sendVictoryNotification(time=proofOfLotteryResult[0],
+                                                                                             seed=str(proofOfLotteryResult[1]),
+                                                                                             transactions_list=proofOfLotteryResult[2],
+                                                                                             block_hash=proofOfLotteryResult[3],
+                                                                                             lottery_number=str(proofOfLotteryResult[4]),
+                                                                                             miner_address=proofOfLotteryResult[5],
+                                                                                             previous_block_hash=str(previousBlockHash),
+                                                                                             host=host)
 
-                    # Flush transaction lists
-                    self.miningStatus.receivedTransactions.clear()
-                    self.miningStatus.canStartMining = False
+                    # Re verify
+                    if verify:
+                        ledgerHandler.insertBlockInLedger(BlockMiningObject(time=proofOfLotteryResult[0],
+                                                                            seed=str(proofOfLotteryResult[1]),
+                                                                            transactions_list=proofOfLotteryResult[2],
+                                                                            block_hash=proofOfLotteryResult[3],
+                                                                            lottery_number=str(proofOfLotteryResult[4]),
+                                                                            miner_address=proofOfLotteryResult[5],
+                                                                            previous_block_hash=str(previousBlockHash)
+                                                                            )
+                                                          )
+
+
+                        # Flush transaction lists
+                        self.miningStatus.receivedTransactions.clear()
+                        self.miningStatus.canStartMining = False
