@@ -54,7 +54,7 @@ class GrpcServerHandler(Thread):
 
         # Add block mining service
         BlockMining_pb2_grpc.add_BlockMiningServicer_to_server(
-            BlockMiningService(),
+            BlockMiningService(self.miningStatus),
             server
         )
 

@@ -1,6 +1,6 @@
 import grpc
 
-from comunication.grpc_protos import BlockMining_pb2_grpc, BlockMining_pb2
+from comunication.grpc_protos import BlockMining_pb2, BlockMining_pb2_grpc
 
 from concurrent import futures
 import logging
@@ -62,8 +62,7 @@ class BlockMiningHandlerClient:
                                                    block_hash=block_hash,
                                                    lottery_number=lottery_number,
                                                    miner_address=miner_address,
-                                                   previous_block_hash=previous_block_hash
-                                                   )
+                                                   previous_block_hash=previous_block_hash)
             )
 
         # If correct return true, false otherwise
