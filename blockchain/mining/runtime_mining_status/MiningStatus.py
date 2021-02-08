@@ -24,10 +24,15 @@ class MiningStatus:
         self.canStartMining = len(self.receivedTransactions) >= self.miningStartThreshold
         self.transactionReceivedNumber = len(self.receivedTransactions)
 
+        self.blockMiningNotifications = []
+        self.anotherMinerHaveMined = False
+
     def __str__(self):
 
         return f"{self.minerConfiguration}\n"\
                f"RECEIVED TRANSACTIONS: \n{ProofOfLottery.stringifyTransactionList(self.receivedTransactions)}\n"\
                f"START TO MINE AFTER: {self.miningStartThreshold}\n"\
                f"CAN START MINING: {self.canStartMining}\n" \
-               f"NUMBER OF TRANSACTIONS RECEIVED: {self.transactionReceivedNumber}"
+               f"NUMBER OF TRANSACTIONS RECEIVED: {self.transactionReceivedNumber}\n" \
+               f"ANOTHER MINER HAVE MINED: {self.anotherMinerHaveMined}\n" \
+               f"BLOCK MINING NOTIFICATIONS: {[str(blockMinintNotification) for blockMinintNotification in self.blockMiningNotifications]}"
