@@ -1,0 +1,3 @@
+"""
+Handle blocks comunication properties
+"""
