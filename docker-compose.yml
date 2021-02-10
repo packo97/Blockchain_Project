@@ -1,0 +1,52 @@
+version: '3'
+services:
+# Miner 1
+  miner1:
+    build: './blockchain'
+    command: 'python main.py docker-configs/configForMiner1.json'
+    ports: 
+      - "50051:50051"
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+    networks:
+      my-blockchain-network:
+        ipv4_address: '1.0.0.11'
+# Miner 2
+  miner2:
+    build: './blockchain'
+    command: 'python main.py docker-configs/configForMiner2.json'
+    ports: 
+      - "50052:50052"
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+    networks:
+      my-blockchain-network:
+        ipv4_address: '1.0.0.12'
+# Miner 3
+  miner3:
+    build: './blockchain'
+    command: 'python main.py docker-configs/configForMiner3.json'
+    ports: 
+      - "50053:50053"
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+    networks:
+      my-blockchain-network:
+        ipv4_address: '1.0.0.13'
+# Client (NOT IN LISTEN MODE)
+  client:
+    build: './blockchain'
+    command: 'python main.py docker-configs/configForClient.json evento-prova 10'
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+    networks:
+      my-blockchain-network:
+        ipv4_address: '1.0.0.20'
+# Network
+networks: 
+  my-blockchain-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config: 
+        - subnet: 1.0.0.0/24 
