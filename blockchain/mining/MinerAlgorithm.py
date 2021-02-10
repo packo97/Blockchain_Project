@@ -26,7 +26,7 @@ class ProofOfLottery:
         Stringify a list of transaction
 
         :param transactionList: Transaction list to stringify
-        :return: String encooding of transactions
+        :return: String encoding of transactions
         """
 
         return ''.join(str(transaction) for transaction in transactionList)
