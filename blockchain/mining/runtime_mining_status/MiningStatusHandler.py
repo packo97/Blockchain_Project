@@ -37,13 +37,11 @@ class MiningStatusHandler(Thread):
         """
         os.system("clear")
         print(f"{self.miningStatus}")
-        sleep(1)
 
     def handleMiningConfiguration(self):
         """
         Handle mining configuration.
         Conditions and NON static stuffs
-
         """
 
         # We can start mining condition
@@ -53,6 +51,9 @@ class MiningStatusHandler(Thread):
 
         self.miningStatus.transactionReceivedNumber = len(self.miningStatus.receivedTransactions)
 
+        # Arrived at least 1 block mining notifications
+        self.miningStatus.anotherMinerHaveMined = len(self.miningStatus.blockMiningNotifications) > 0
+
     def run(self):
         """
         Run method of thread
@@ -61,4 +62,4 @@ class MiningStatusHandler(Thread):
             with self.lock:
                 self.handleMiningConfiguration()
                 self.reportMiningConfiguration()
-            sleep(1)
+            sleep(0.5)

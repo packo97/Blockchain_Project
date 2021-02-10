@@ -212,7 +212,7 @@ class MinerAlgorithm(Thread):
                 if verify:
                     # Communicate win to miners
                     for host in self.miningStatus.minerConfiguration.getKnownHosts():
-                        # Validate verify
+                        # Validate verify for each miner
                         verify = verify and BlockMiningHandlerClient.sendVictoryNotification(time=proofOfLotteryResult[0],
                                                                                              seed=str(proofOfLotteryResult[1]),
                                                                                              transactions_list=proofOfLotteryResult[2],
@@ -222,8 +222,9 @@ class MinerAlgorithm(Thread):
                                                                                              previous_block_hash=str(previousBlockHash),
                                                                                              host=host)
 
-                    # Re verify
+                    # Re verify FINAL
                     if verify:
+                        # Insert block in ledger
                         ledgerHandler.insertBlockInLedger(BlockMiningObject(time=proofOfLotteryResult[0],
                                                                             seed=str(proofOfLotteryResult[1]),
                                                                             transactions_list=proofOfLotteryResult[2],
@@ -238,3 +239,4 @@ class MinerAlgorithm(Thread):
                         # Flush transaction lists
                         self.miningStatus.receivedTransactions.clear()
                         self.miningStatus.canStartMining = False
+        sleep(0.5)

@@ -1,4 +1,6 @@
 # Utils stuffs
+import hashlib
+
 import grpc
 
 from concurrent import futures
@@ -9,6 +11,7 @@ from threading import Thread
 # Proto generated stuffs
 from comunication.blocks.BlockMiningObject import BlockMiningObject
 from comunication.grpc_protos import BlockMining_pb2_grpc, BlockMining_pb2
+from mining.MinerAlgorithm import ProofOfLottery
 
 
 class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
@@ -41,4 +44,11 @@ class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
 
         self.miningStatus.blockMiningNotifications.append(blockMiningRequestObject)
 
-        return BlockMining_pb2.BlockMiningResponse(valid=True)
+        verified = ProofOfLottery.verify(seed=request.seed,
+                                      receivedTransactionsStringify=request.transactions_list,
+                                      blockHash=request.block_hash,
+                                      lotteryFunctionBlockHash=request.lottery_number,
+                                      minerAddress=request.miner_address,
+                                      hashedMinerAddress=blockMiningRequestObject.hashedMinerAddress)
+
+        return BlockMining_pb2.BlockMiningResponse(valid=verified)
