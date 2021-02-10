@@ -187,7 +187,8 @@ class MinerAlgorithm(Thread):
         while True:
             with self.lock:
 
-                self.cleanTransactionsAlreadyMined()
+                # Remove from transaction list all transaction that other miners have mined
+                self.removeTransactionsAlreadyMinedIfAny()
 
                 # We are not ready to mine because we have not get the threshold
                 while not self.miningStatus.canStartMining:
@@ -249,18 +250,26 @@ class MinerAlgorithm(Thread):
                         self.miningStatus.blockMiningNotifications = []
                         self.miningStatus.anotherMinerHaveMined = False
 
+            sleep(0.5)
 
-        sleep(0.5)
+    def removeTransactionsAlreadyMinedIfAny(self):
+        # If someone has already mined i remove transactions (if any in common)
+        if self.miningStatus.anotherMinerHaveMined:
+            # For each block mining notification
+            for blockMiningNotification in self.miningStatus.blockMiningNotifications:
+                # Fetch all transactions mined in mining notification
+                minedByAnother = ProofOfLottery.deStringifyTransactionString(blockMiningNotification.transactions_list)
 
-    def cleanTransactionsAlreadyMined(self):
-        for blockMiningNotification in self.miningStatus.blockMiningNotifications:
-            minedByAnother = ProofOfLottery.deStringifyTransactionString(blockMiningNotification.transactions_list)
-            newTransactionLists = [transaction for transaction in self.miningStatus.receivedTransactions if transaction not in minedByAnother]
-            self.miningStatus.receivedTransactions = newTransactionLists
+                # Symmetric difference with transactions i have
+                newTransactionLists = [transaction
+                                       for transaction in self.miningStatus.receivedTransactions
+                                       if transaction not in minedByAnother]
+                self.miningStatus.receivedTransactions = newTransactionLists
 
-        if len(self.miningStatus.receivedTransactions) < self.miningStatus.miningStartThreshold:
-            self.miningStatus.canStartMining = False
+            # If i'm below threshold to mine
+            if len(self.miningStatus.receivedTransactions) < self.miningStatus.miningStartThreshold:
+                self.miningStatus.canStartMining = False
 
-        # Remove block mining notifications
-        self.miningStatus.blockMiningNotifications = []
-        self.miningStatus.anotherMinerHaveMined = False
+            # Remove block mining notifications
+            self.miningStatus.blockMiningNotifications = []
+            self.miningStatus.anotherMinerHaveMined = False

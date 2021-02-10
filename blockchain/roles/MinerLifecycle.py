@@ -53,14 +53,7 @@ def minerLifecycle(minerConfiguration):
         canStartMiningCondition=canStartMiningCondition
     )
 
-    # Monitor if block mining notifications arrived and eventually update mining status
-    # blockMiningReceiverHandler = BlockMiningReceiverHandler(
-    #     miningStatus=miningStatus,
-    #     lock=lock
-    # )
-
     # Run every thread ot miner lifecycle
     grpcServerHandler.start()
     miningStatusReporter.start()
     minerAlgorithm.start()
-    # blockMiningReceiverHandler.start()
