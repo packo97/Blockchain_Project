@@ -186,6 +186,9 @@ class MinerAlgorithm(Thread):
         """
         while True:
             with self.lock:
+
+                self.cleanTransactionsAlreadyMined()
+
                 # We are not ready to mine because we have not get the threshold
                 while not self.miningStatus.canStartMining:
                     self.canStartMiningCondition.wait()
@@ -213,6 +216,7 @@ class MinerAlgorithm(Thread):
                     # Communicate win to miners
                     for host in self.miningStatus.minerConfiguration.getKnownHosts():
                         # Validate verify for each miner
+
                         verify = verify and BlockMiningHandlerClient.sendVictoryNotification(time=proofOfLotteryResult[0],
                                                                                              seed=str(proofOfLotteryResult[1]),
                                                                                              transactions_list=proofOfLotteryResult[2],
@@ -222,8 +226,9 @@ class MinerAlgorithm(Thread):
                                                                                              previous_block_hash=str(previousBlockHash),
                                                                                              host=host)
 
+
                     # Re verify FINAL
-                    if verify:
+                    if verify and not self.miningStatus.anotherMinerHaveMined:
                         # Insert block in ledger
                         ledgerHandler.insertBlockInLedger(BlockMiningObject(time=proofOfLotteryResult[0],
                                                                             seed=str(proofOfLotteryResult[1]),
@@ -239,4 +244,23 @@ class MinerAlgorithm(Thread):
                         # Flush transaction lists
                         self.miningStatus.receivedTransactions.clear()
                         self.miningStatus.canStartMining = False
+
+                        #flush block mining request
+                        self.miningStatus.blockMiningNotifications = []
+                        self.miningStatus.anotherMinerHaveMined = False
+
+
         sleep(0.5)
+
+    def cleanTransactionsAlreadyMined(self):
+        for blockMiningNotification in self.miningStatus.blockMiningNotifications:
+            minedByAnother = ProofOfLottery.deStringifyTransactionString(blockMiningNotification.transactions_list)
+            newTransactionLists = [transaction for transaction in self.miningStatus.receivedTransactions if transaction not in minedByAnother]
+            self.miningStatus.receivedTransactions = newTransactionLists
+
+        if len(self.miningStatus.receivedTransactions) < self.miningStatus.miningStartThreshold:
+            self.miningStatus.canStartMining = False
+
+        # Remove block mining notifications
+        self.miningStatus.blockMiningNotifications = []
+        self.miningStatus.anotherMinerHaveMined = False

@@ -42,6 +42,7 @@ class BlockMiningReceiverHandler(Thread):
                 if self.miningStatus.anotherMinerHaveMined:
                     # Reset my transaction list
                     newTransactions = []
+
                     for blockMiningNotification in self.miningStatus.blockMiningNotifications:
                         isBloockMiningRequestGood = ProofOfLottery.verify(seed=blockMiningNotification.seed,
                                                                           receivedTransactionsStringify=blockMiningNotification.transactions_list,
@@ -55,8 +56,8 @@ class BlockMiningReceiverHandler(Thread):
                             minedByAnother = ProofOfLottery.deStringifyTransactionString(self.miningStatus.blockMiningNotifications)
                             newTransactionLists = [transaction for transaction in self.miningStatus.receivedTransactions if transaction not in minedByAnother]
                             self.miningStatus.receivedTransactions = newTransactionLists
-                            print(self.miningStatus.receivedTransactions)
-                            exit(1)
+
+
 
                             # Update condition of mining
                             if len(self.miningStatus.receivedTransactions) < self.miningStatus.miningStartThreshold:
