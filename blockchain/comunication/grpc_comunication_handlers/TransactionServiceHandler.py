@@ -14,6 +14,7 @@ from comunication.grpc_protos import Transaction_pb2_grpc, Transaction_pb2
 from comunication.transactions.TransactionObject import TransactionObject
 from comunication.transactions.validation.TransactionValidator import TransactionValidator
 from ledger_handler.LedgerHandler import LedgerHandler
+from mining.MinerAlgorithm import ProofOfLottery
 
 
 class TransactionService(Transaction_pb2_grpc.TransactionServicer):
@@ -77,15 +78,33 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         eventVoted = ledgerHandler.getAllEventVotedByAnAddress(address=request.address, event=request.event)
         validSemantic = eventVoted.fetchone() is None
 
-        # Transaction is already sent (bad client)
+        # TRANSACTION ISN'T ALREADY SENT (bad client). You cannot send same transaction
         requestTransaction = TransactionObject(time=request.time,
                                                address=request.address,
                                                event=request.event,
                                                vote=request.vote)
-        alreadySentToMiner = requestTransaction in self.miningStatus.receivedTransactions
 
-        # Already voter for event
-        alreadyVoted = request.event in [transaction.event for transaction in self.miningStatus.receivedTransactions]
+        # All transaction already mined by others (NOT NOW IN LEDGER)
+        alreadyMinedByOthersButNotInLedger = []
+        for blockMiningNotification in self.miningStatus.blockMiningNotifications:
+            alreadyMinedByOthersButNotInLedger = alreadyMinedByOthersButNotInLedger + ProofOfLottery.\
+                deStringifyTransactionString(blockMiningNotification.transactionsList)
+
+        # All transaction already mined by me (NOT NOW IN LEDGER)
+        alreadyMinedByMeButNotInLedger = []
+        for blockMiningNotification in self.miningStatus.blockMiningNotificationsMinedByMe:
+            alreadyMinedByMeButNotInLedger = alreadyMinedByMeButNotInLedger + ProofOfLottery. \
+                deStringifyTransactionString(blockMiningNotification.transactionsList)
+
+        # TOTAL TRANSACTIONS are transaction received and transactions mined (by me or other miners that are not
+        # already in the ledger)
+        totalTransactions = alreadyMinedByOthersButNotInLedger + alreadyMinedByMeButNotInLedger + self.miningStatus.receivedTransactions
+
+        # If this transaction is already sended
+        alreadySentToMiner = requestTransaction in totalTransactions
+
+        # Already voter for event. You CANNOT send (e,vote x) , (e, vote y)
+        alreadyVoted = request.event in [transaction.event for transaction in totalTransactions]
 
         # Final
         transactionValid = validSyntax and validSemantic and (not alreadySentToMiner) and (not alreadyVoted)
