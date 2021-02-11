@@ -32,8 +32,15 @@ class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
         self.miningStatus = miningStatus
 
     def sendVictoryNotification(self, request, context):
-        # ... Validate request using verify of ProofOfLottery class ...
+        """
+        Send victory notification service function implementation
 
+        :param request: Request to send
+        :param context: Context
+        :return: If is valid
+        """
+
+        # Create block mining object
         blockMiningRequestObject = BlockMiningObject(time=request.time,
                                                      seed=request.seed,
                                                      transactions_list=request.transactions_list,
@@ -42,13 +49,16 @@ class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
                                                      miner_address=request.miner_address,
                                                      previous_block_hash=request.previous_block_hash)
 
-        self.miningStatus.blockMiningNotifications.append(blockMiningRequestObject)
-
+        # Verify block mining
         verified = ProofOfLottery.verify(seed=request.seed,
-                                      receivedTransactionsStringify=request.transactions_list,
-                                      blockHash=request.block_hash,
-                                      lotteryFunctionBlockHash=request.lottery_number,
-                                      minerAddress=request.miner_address,
-                                      hashedMinerAddress=blockMiningRequestObject.hashedMinerAddress)
+                                         receivedTransactionsStringify=request.transactions_list,
+                                         blockHash=request.block_hash,
+                                         lotteryFunctionBlockHash=request.lottery_number,
+                                         minerAddress=request.miner_address,
+                                         hashedMinerAddress=blockMiningRequestObject.hashedMinerAddress)
+
+        # Append to list of received if is correct
+        if verified:
+            self.miningStatus.blockMiningNotifications.append(blockMiningRequestObject)
 
         return BlockMining_pb2.BlockMiningResponse(valid=verified)

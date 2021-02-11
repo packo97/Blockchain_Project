@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+/**
+  * Block Storing service. It permit to "What block can be stored".
+  *
+  * NOTE: Is different to block mining because block mining told "who has mined",
+  * Block storing differently told "now you can store in ledger".
+  *
+  * It is useful to avoid problems of contemporaneous block mining of same transactions
+ */
+service BlockStoringInLedger {
+  /**
+    * Send block storing notification of Miner Game
+   */
+  rpc sendBlockStoringInLedgerNotification (BlockStoringInLedgerRequest) returns (BlockStoringInLedgerResponse);
+}
+
+
+
+/**
+  * Request that told us "A block is mined".
+ */
+message BlockStoringInLedgerRequest {
+  string time = 1;
+  string seed = 2;
+  string transactions_list = 3;
+  string block_hash = 4;
+  string lottery_number = 5;
+  string miner_address = 6;
+  string previous_block_hash = 7;
+}
+
+
+/**
+  * Block response.
+  * It is sent by miners that approved or not
+  * the validation by the miner who send block
+  * mining request
+ */
+message BlockStoringInLedgerResponse {
+  bool valid = 1;
+}
