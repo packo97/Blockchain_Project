@@ -7,9 +7,11 @@ from threading import RLock, Condition
 
 # Transaction maker
 from comunication.grpc_comunication_handlers.GrpcServerHandler import GrpcServerHandler
-from mining.BlockMiningReceiverHandler import BlockMiningReceiverHandler
 
+# Mining algorithm
 from mining.MinerAlgorithm import MinerAlgorithm
+
+# Mining current status
 from mining.runtime_mining_status.MiningStatus import MiningStatus
 from mining.runtime_mining_status.MiningStatusHandler import MiningStatusHandler
 

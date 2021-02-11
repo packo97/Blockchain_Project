@@ -33,6 +33,36 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
 
         self.miningStatus = miningStatus
 
+    def spreadTransactionToOtherMiners(self, requestTransaction):
+        """
+        Send transaction to other miners.
+        Is not important if they return false
+        (because they have already the transaction
+            or
+        they are unavailable
+            or
+        other stuff...)
+
+        This is because the "three da chiazza protocol is guarantee
+        client side
+
+        :param requestTransaction: Transaction request to spread
+        """
+
+        # Send transaction to miners (FOR EACH KNOWN HOST)
+        for minerHostAddress in self.miningStatus.minerConfiguration.getKnownHosts():
+            try:
+                # Send transaction and do nothing
+                responseStatus = TransactionHandlerClient.sendTransaction(time=requestTransaction.time,
+                                                                          event=requestTransaction.event,
+                                                                          vote=requestTransaction.vote,
+                                                                          address=requestTransaction.address,
+                                                                          host=requestTransaction.minerHostAddress)
+
+            # In case of exception do nothing
+            except Exception:
+                pass
+
     def sendTransaction(self, request, context):
         # By default we assume transaction false
         transactionValid = False
@@ -57,38 +87,14 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         # Already voter for event
         alreadyVoted = request.event in [transaction.event for transaction in self.miningStatus.receivedTransactions]
 
-        # # Send to other miner AT LEAST 3
-        # sentToAtLeast3Miners = False
-        #
-        # # Count the number of sending transactions
-        # sendingTransactionsCount = 0
-        #
-        # # Send transaction to miners (FOR EACH KNOWN HOST)
-        # for minerHostAddress in self.miningStatus.minerConfiguration.getKnownHosts():
-        #     try:
-        #         # Get response status (try to send transaction)
-        #         responseStatus = TransactionHandlerClient.sendTransaction(time=requestTransaction.time,
-        #                                                                   event=requestTransaction.event,
-        #                                                                   vote=requestTransaction.vote,
-        #                                                                   address=requestTransaction.address,
-        #                                                                   host=requestTransaction.minerHostAddress)
-        #
-        #         # Transaction is going well (no errors or other stuffs) we update sending transaction counter
-        #         if responseStatus:
-        #             sendingTransactionsCount = sendingTransactionsCount + 1
-        #
-        #     except Exception:
-        #         print(f"{minerHostAddress} is unreachable!", file=sys.stderr)
-        #
-        # # Verify if transaction is sented to AT LEAST 3 peers ("3 da chiazza protocol")
-        # if sendingTransactionsCount >= 3:
-        #     sentToAtLeast3Miners = True
-
         # Final
-        transactionValid = validSyntax and validSemantic and (not alreadySentToMiner) and (not alreadyVoted) # and sentToAtLeast3Miners
+        transactionValid = validSyntax and validSemantic and (not alreadySentToMiner) and (not alreadyVoted)
 
         # If transaction is valid we can append it to our transactions list
         if transactionValid:
+            # Sent transaction to other miners
+            self.spreadTransactionToOtherMiners(requestTransaction)
+
             # Append to transactions
             self.miningStatus.receivedTransactions.append(requestTransaction)
 

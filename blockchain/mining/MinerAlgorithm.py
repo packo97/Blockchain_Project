@@ -128,10 +128,7 @@ class ProofOfLottery:
         foundCorrectSeed = False
         seed = 0
         while not foundCorrectSeed:
-            # Update seed
-            # INCREMENTAL
-            # seed = seed+1
-            # RANDOMLY
+            # Update seed RANDOMLY
             seed = random.randint(0, sys.maxsize)
 
             # Concatenate received transaction string with seed
@@ -154,7 +151,16 @@ class ProofOfLottery:
 
 class MinerAlgorithm(Thread):
     """
-    Class that handle mining algorithm
+    Class that handle mining algorithm.
+
+    The main lifecycle is:
+        Receiving mining requests and if there are any transaction in common (transactions already mined)
+        it make symmetric difference between mined transactions and received transactions
+
+        Wait start mining
+
+        Calculate proof of lottery, verify it and send all to other known miners (they must verify)
+        and after approbation send the request of block mining with all transactions
     """
 
     def __init__(self,
@@ -184,19 +190,30 @@ class MinerAlgorithm(Thread):
 
         It wait when arrive a threshold of transactions and after start proof of lottery
         """
+
         while True:
             with self.lock:
 
+                # 1) Receiving mining requests and if there are any transaction in common
+                # (transactions already mined) it make symmetric difference between mined
+                # transactions and received transactions
+
                 # Remove from transaction list all transaction that other miners have mined
                 self.removeTransactionsAlreadyMinedIfAny()
+
+                # 2) Wait start mining
 
                 # We are not ready to mine because we have not get the threshold
                 while not self.miningStatus.canStartMining:
                     self.canStartMiningCondition.wait()
 
-                # Now we can mine because we arrived to threshold
-                proofOfLotteryResult = ProofOfLottery.calculate(minerAddress=self.miningStatus.minerConfiguration.getAddress(),
-                                                                receivedTransactions=self.miningStatus.receivedTransactions)
+                # 3) Calculate proof of lottery, verify it and send all to other known miners (they must verify)
+                # and after approbation send the request of block mining with all transactions
+
+                # Now we can mine because we are arrived to threshold
+                proofOfLotteryResult = ProofOfLottery\
+                    .calculate(minerAddress=self.miningStatus.minerConfiguration.getAddress(),
+                               receivedTransactions=self.miningStatus.receivedTransactions)
 
                 # Make verification of our work (to pickle, AUTO VERIFY)
                 verify = ProofOfLottery.verify(seed=proofOfLotteryResult[1],
@@ -205,7 +222,6 @@ class MinerAlgorithm(Thread):
                                                lotteryFunctionBlockHash=proofOfLotteryResult[4],
                                                minerAddress=proofOfLotteryResult[5],
                                                hashedMinerAddress=proofOfLotteryResult[6])
-
 
                 # Get previous block hash
                 from ledger_handler.LedgerHandler import LedgerHandler
@@ -216,45 +232,51 @@ class MinerAlgorithm(Thread):
                 if verify:
                     # Communicate win to miners
                     for host in self.miningStatus.minerConfiguration.getKnownHosts():
-                        # Validate verify for each miner
 
-                        verify = verify and BlockMiningHandlerClient.sendVictoryNotification(time=proofOfLotteryResult[0],
-                                                                                             seed=str(proofOfLotteryResult[1]),
-                                                                                             transactions_list=proofOfLotteryResult[2],
-                                                                                             block_hash=proofOfLotteryResult[3],
-                                                                                             lottery_number=str(proofOfLotteryResult[4]),
-                                                                                             miner_address=proofOfLotteryResult[5],
-                                                                                             previous_block_hash=str(previousBlockHash),
-                                                                                             host=host)
+                        # Validate and re verify for each miner
+                        verify = verify and BlockMiningHandlerClient\
+                            .sendVictoryNotification(time=proofOfLotteryResult[0],
+                                                     seed=str(proofOfLotteryResult[1]),
+                                                     transactions_list=proofOfLotteryResult[2],
+                                                     block_hash=proofOfLotteryResult[3],
+                                                     lottery_number=str(proofOfLotteryResult[4]),
+                                                     miner_address=proofOfLotteryResult[5],
+                                                     previous_block_hash=str(previousBlockHash),
+                                                     host=host)
 
-
-                    # Re verify FINAL
+                    # Final verify to be pickle we use auto verification and obviously verification of other miners
                     if verify and not self.miningStatus.anotherMinerHaveMined:
                         # Insert block in ledger
-                        ledgerHandler.insertBlockInLedger(BlockMiningObject(time=proofOfLotteryResult[0],
-                                                                            seed=str(proofOfLotteryResult[1]),
-                                                                            transactions_list=proofOfLotteryResult[2],
-                                                                            block_hash=proofOfLotteryResult[3],
-                                                                            lottery_number=str(proofOfLotteryResult[4]),
-                                                                            miner_address=proofOfLotteryResult[5],
-                                                                            previous_block_hash=str(previousBlockHash)
-                                                                            )
-                                                          )
+                        ledgerHandler.insertBlockInLedger(
+                            BlockMiningObject(time=proofOfLotteryResult[0],
+                                              seed=str(proofOfLotteryResult[1]),
+                                              transactions_list=proofOfLotteryResult[2],
+                                              block_hash=proofOfLotteryResult[3],
+                                              lottery_number=str(proofOfLotteryResult[4]),
+                                              miner_address=proofOfLotteryResult[5],
+                                              previous_block_hash=str(previousBlockHash)
+                                              )
+                        )
 
-
-                        # Flush transaction lists
+                        # Flush transactions list
                         self.miningStatus.receivedTransactions.clear()
                         self.miningStatus.canStartMining = False
 
-                        #flush block mining request
+                        # Flush block mining request
                         self.miningStatus.blockMiningNotifications = []
                         self.miningStatus.anotherMinerHaveMined = False
 
             sleep(0.5)
 
     def removeTransactionsAlreadyMinedIfAny(self):
+        """
+        Remove all transactions from my received transactions
+        that other miner has mined before me
+        """
+
         # If someone has already mined i remove transactions (if any in common)
         if self.miningStatus.anotherMinerHaveMined:
+
             # For each block mining notification
             for blockMiningNotification in self.miningStatus.blockMiningNotifications:
                 # Fetch all transactions mined in mining notification
