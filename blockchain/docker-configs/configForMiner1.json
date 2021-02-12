@@ -2,9 +2,11 @@
     "role": "miner",
     "knownHosts": [
         "1.0.0.12:50052",
-        "1.0.0.13:50053"
+        "1.0.0.13:50053",
+        "1.0.0.14:50054",
+        "1.0.0.15:50055"
     ],
     "address": "MINER_ADDRESS1",
     "minerPort": "50051",
-    "ledgerDatabasePath": "ledger1.db"
+    "ledgerDatabasePath": "docker-configs/docker-ledgers/ledger1.db"
 }

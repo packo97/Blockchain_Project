@@ -33,10 +33,32 @@ services:
     networks:
       my-blockchain-network:
         ipv4_address: '1.0.0.13'
+# Miner 4
+  miner4:
+    build: './blockchain'
+    command: 'python main.py docker-configs/configForMiner4.json'
+    ports: 
+      - "50054:50054"
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+    networks:
+      my-blockchain-network:
+        ipv4_address: '1.0.0.14'
+# Miner 5
+  miner5:
+    build: './blockchain'
+    command: 'python main.py docker-configs/configForMiner3.json'
+    ports: 
+      - "50055:50055"
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+    networks:
+      my-blockchain-network:
+        ipv4_address: '1.0.0.15'
 # Client (NOT IN LISTEN MODE)
   client:
     build: './blockchain'
-    command: 'python main.py docker-configs/configForClient.json evento-prova 10'
+    command: 'python main.py docker-configs/configForClient.json b 10 & python main.py docker-configs/configForClient.json c 10 & python main.py docker-configs/configForClient.json d 10'
     stdin_open: true  # docker run -i
     tty: true         # docker run -t
     networks:
