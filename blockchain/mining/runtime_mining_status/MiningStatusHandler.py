@@ -17,8 +17,7 @@ class MiningStatusHandler(Thread):
     def __init__(self,
                  lock,
                  miningStatus,
-                 canStartMiningCondition,
-                 canStartStoringInLedgerCondition):
+                 canStartMiningCondition):
         """
         Constructor with parameters
 
@@ -27,7 +26,6 @@ class MiningStatusHandler(Thread):
 
         self.lock = lock
         self.canStartMiningCondition = canStartMiningCondition
-        self.canStartStoringInLedgerCondition = canStartStoringInLedgerCondition
         self.miningStatus = miningStatus
 
         # Init thread
@@ -62,9 +60,6 @@ class MiningStatusHandler(Thread):
         # We can start storing block
         allMiningNotifications = self.miningStatus.blockMiningNotificationsMinedByMe + \
                                  self.miningStatus.blockMiningNotifications
-
-        if len(allMiningNotifications) >= len(self.miningStatus.minerConfiguration.getKnownHosts()):
-            self.canStartStoringInLedgerCondition.notifyAll()
 
     def run(self):
         """

@@ -33,7 +33,6 @@ def minerLifecycle(minerConfiguration):
     # Init thread stuffs
     lock = RLock()
     canStartMiningCondition = Condition(lock)
-    canStartStoringInLedgerCondition = Condition(lock)
 
     # Workers
     # Server thath handle grpc requests
@@ -46,8 +45,7 @@ def minerLifecycle(minerConfiguration):
     miningStatusReporter = MiningStatusHandler(
         lock=lock,
         miningStatus=miningStatus,
-        canStartMiningCondition=canStartMiningCondition,
-        canStartStoringInLedgerCondition=canStartStoringInLedgerCondition
+        canStartMiningCondition=canStartMiningCondition
     )
 
     # Execute mining
@@ -60,8 +58,7 @@ def minerLifecycle(minerConfiguration):
     # Select what is the "best" mining notification that must be stored in ledger
     miningNotificationsHandler = MiningNotificationsHandler(
         miningStatus=miningStatus,
-        lock=lock,
-        canStartStoringInLedgerCondition=canStartStoringInLedgerCondition
+        lock=lock
     )
 
     # Run every thread ot miner lifecycle
