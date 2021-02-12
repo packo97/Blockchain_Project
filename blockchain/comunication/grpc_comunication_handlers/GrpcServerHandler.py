@@ -4,8 +4,7 @@ import logging
 from threading import Thread
 
 # Grpc Stuff
-from comunication.grpc_comunication_handlers.BlockStoringInLedgerServiceHandler import BlockStoringInLedgerService
-from comunication.grpc_protos import Transaction_pb2_grpc, BlockMining_pb2_grpc, BlockStoringInLedger_pb2_grpc
+from comunication.grpc_protos import Transaction_pb2_grpc, BlockMining_pb2_grpc
 import grpc
 
 # Services
@@ -56,12 +55,6 @@ class GrpcServerHandler(Thread):
         # Add block mining service
         BlockMining_pb2_grpc.add_BlockMiningServicer_to_server(
             BlockMiningService(self.miningStatus),
-            server
-        )
-
-        # Block storing in ledger service
-        BlockStoringInLedger_pb2_grpc.add_BlockStoringInLedgerServicer_to_server(
-            BlockStoringInLedgerService(self.miningStatus),
             server
         )
 

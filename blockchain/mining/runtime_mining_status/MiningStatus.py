@@ -37,10 +37,6 @@ class MiningStatus:
         self.blockMiningNotificationsMinedByMe = []
         self.iHaveMined = False
 
-        # Block storing in ledger
-        self.blockStoringInLedgerNotifications = []
-        self.thereIsAtLeastAnyBlockToStoreInLedger = False
-
     def __str__(self):
         """
         Stringify the status
@@ -63,5 +59,4 @@ class MiningStatus:
                f"ANOTHER MINER HAVE MINED: {self.anotherMinerHaveMined}\n" \
                f"BLOCK MINING NOTIFICATIONS OF OTHER MINERS: \n\t{blockMiningNotificationsOfOtherMiners}\n" \
                f"I HAVE MINED: {self.iHaveMined}\n" \
-               f"MY BLOCK MINING NOTIFICATIONS: \n\t{blockMiningNotificationsMinedByMe}\n" \
-               f"THERE ARE ANY BLOCK STORING NOTIFICATIONS: {self.thereIsAtLeastAnyBlockToStoreInLedger}\n"
+               f"MY BLOCK MINING NOTIFICATIONS: \n\t{blockMiningNotificationsMinedByMe}\n"

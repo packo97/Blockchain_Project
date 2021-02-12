@@ -59,10 +59,6 @@ class MiningStatusHandler(Thread):
         # I have mined at least 1 block
         self.miningStatus.iHaveMined = len(self.miningStatus.blockMiningNotificationsMinedByMe) > 0
 
-        # Arrived at least 1 block storing in ledger notification
-        self.miningStatus.thereIsAtLeastAnyBlockToStoreInLedger = \
-            len(self.miningStatus.blockStoringInLedgerNotifications) > 0
-
         # We can start storing block
         allMiningNotifications = self.miningStatus.blockMiningNotificationsMinedByMe + \
                                  self.miningStatus.blockMiningNotifications
