@@ -76,7 +76,19 @@ class MiningNotificationsHandler(Thread):
                 #     self.canStartStoringInLedgerCondition.wait()
 
                 # If there is at least 1 mining notification
-                if len(allMiningNotifications) > 0:
+
+                # print("BY ME\n")
+                # for t in self.miningStatus.blockMiningNotificationsMinedByMe:
+                #     print(t)
+                # print("OTHER\n")
+                # for t in self.miningStatus.blockMiningNotifications:
+                #     print(t)
+                # print("\n")
+
+
+
+
+                if len(allMiningNotifications) == len(self.miningStatus.minerConfiguration.getKnownHosts()) + 1:
 
                     # Make groups of lists of transactions
                     groups = []
@@ -89,6 +101,7 @@ class MiningNotificationsHandler(Thread):
                                 if not self.transactionListIsAlreadyInTheGroup(miningNotification1.transactionsList, groups):
                                     groups.append(miningNotification1)
 
+
                     winnerBlocks = []
                     for miningNotification1 in groups:
                         winnerBlock = miningNotification1
@@ -99,22 +112,22 @@ class MiningNotificationsHandler(Thread):
                                     winnerBlock = miningNotification2
                         winnerBlocks.append(winnerBlock)
 
-                    print(f"{winnerBlocks}\n")
+                    #print(f"{winnerBlocks}\n")
                     # Store
                     if len(winnerBlocks) > 0:
                         ledgerHandler = LedgerHandler(self.miningStatus.minerConfiguration.getLedgerDatabasePath())
                         for block in winnerBlocks:
-                            # print(f"{block} STORED")
+                            #print(f"{block} STORED")
                             ledgerHandler.insertBlockInLedger(block)
 
                         # Clean mining notifications
                         # Block mining notifications
                         self.miningStatus.blockMiningNotifications.clear()
-                        self.miningStatus.anotherMinerHaveMined = False
+                        #self.miningStatus.anotherMinerHaveMined = False
 
                         # Our block mining notifications
                         self.miningStatus.blockMiningNotificationsMinedByMe.clear()
-                        self.miningStatus.iHaveMined = False
+                        #self.miningStatus.iHaveMined = False
 
                     # Clean winner blocks
                     winnerBlocks.clear()

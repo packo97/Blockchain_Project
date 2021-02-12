@@ -165,9 +165,9 @@ class MinerAlgorithm(Thread):
                 self.miningStatus.canStartMining = False
 
             # Remove block mining notifications
-            self.miningStatus.blockMiningNotifications.clear()
-            self.miningStatus.anotherMinerHaveMined = False
+            #self.miningStatus.blockMiningNotifications.clear()
+            #self.miningStatus.anotherMinerHaveMined = False
 
             # Remove block mining notifications
-            self.miningStatus.blockMiningNotificationsMinedByMe.clear()
-            self.miningStatus.iHaveMined = False
+            #self.miningStatus.blockMiningNotificationsMinedByMe.clear()
+            #self.miningStatus.iHaveMined = False
