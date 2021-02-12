@@ -1,6 +1,5 @@
 # Utils modules
 import sys
-import re
 
 # Handle json configuration file
 from comunication.transactions.validation.TransactionValidator import TransactionValidator
