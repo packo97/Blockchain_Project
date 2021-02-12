@@ -19,7 +19,7 @@ class TransactionHandlerClient:
         logging.basicConfig()
 
     @staticmethod
-    def sendTransaction(time, address, event, vote, host):
+    def sendTransaction(time, address, event, vote, host, broadcast):
         """
         Sent transaction client side
 
@@ -28,6 +28,7 @@ class TransactionHandlerClient:
         :param event: Event to vote
         :param vote: Vote to assign to event
         :param host: Host/Miner ip to send transaction
+        :param broadcast: If send transaction in broadcast or not
 
         :return: response
         """
@@ -41,7 +42,8 @@ class TransactionHandlerClient:
                 Transaction_pb2.TransactionRequest(time=time,
                                                    address=address,
                                                    event=event,
-                                                   vote=vote)
+                                                   vote=vote,
+                                                   broadcast=broadcast)
             )
 
         # If correct return true, false otherwise

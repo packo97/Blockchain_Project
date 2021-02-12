@@ -1,6 +1,8 @@
 # Utils stuffs
 from concurrent import futures
 import logging
+from random import randint
+
 from time import sleep
 
 import grpc
@@ -14,7 +16,7 @@ from comunication.grpc_protos import Transaction_pb2_grpc, Transaction_pb2
 from comunication.transactions.TransactionObject import TransactionObject
 from comunication.transactions.validation.TransactionValidator import TransactionValidator
 from ledger_handler.LedgerHandler import LedgerHandler
-from mining.MinerAlgorithm import ProofOfLottery
+from mining.mining_utils.ProofOfLottery import ProofOfLottery
 
 
 class TransactionService(Transaction_pb2_grpc.TransactionServicer):
@@ -54,11 +56,17 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         for minerHostAddress in self.miningStatus.minerConfiguration.getKnownHosts():
             try:
                 # Send transaction and do nothing
+                # BROADCAST
+                # If here is True, it resend transaction to others.
+                # Increasing p, means decreasing probability to have True
+                # We choose to manage p in this way to avoid infinite loop!
+                p = 5
                 responseStatus = TransactionHandlerClient.sendTransaction(time=requestTransaction.time,
                                                                           event=requestTransaction.event,
                                                                           vote=requestTransaction.vote,
                                                                           address=requestTransaction.address,
-                                                                          host=requestTransaction.minerHostAddress)
+                                                                          host=minerHostAddress,
+                                                                          broadcast=(randint(1, 10) >= p))
 
             # In case of exception do nothing
             except Exception:
@@ -112,10 +120,12 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         # If transaction is valid we can append it to our transactions list
         if transactionValid:
             # Sent transaction to other miners
-            self.spreadTransactionToOtherMiners(requestTransaction)
+            if request.broadcast:
+                self.spreadTransactionToOtherMiners(requestTransaction)
 
             # Append to transactions
-            self.miningStatus.receivedTransactions.append(requestTransaction)
+            if requestTransaction not in self.miningStatus.receivedTransactions:
+                self.miningStatus.receivedTransactions.append(requestTransaction)
 
         # Return transaction with result
         return Transaction_pb2.TransactionResponse(valid=transactionValid)

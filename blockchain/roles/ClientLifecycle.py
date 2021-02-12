@@ -37,10 +37,11 @@ def clientLifecycle(clientConfiguration, event, vote, address):
                                                                       event=event,
                                                                       vote=vote,
                                                                       address=address,
-                                                                      host=minerHostAddress)
+                                                                      host=minerHostAddress,
+                                                                      broadcast=True)
 
             # Transaction is going well (no errors or other stuffs) we update sending transaction counter
-            if responseStatus:
+            if responseStatus.valid:
                 sendingTransactionsCount = sendingTransactionsCount + 1
 
         except Exception:

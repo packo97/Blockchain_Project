@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11Transaction.proto\"P\n\x12TransactionRequest\x12\x0c\n\x04time\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\r\n\x05\x65vent\x18\x03 \x01(\t\x12\x0c\n\x04vote\x18\x04 \x01(\t\"$\n\x13TransactionResponse\x12\r\n\x05valid\x18\x01 \x01(\x08\x32K\n\x0bTransaction\x12<\n\x0fsendTransaction\x12\x13.TransactionRequest\x1a\x14.TransactionResponseb\x06proto3'
+  serialized_pb=b'\n\x11Transaction.proto\"c\n\x12TransactionRequest\x12\x0c\n\x04time\x18\x01 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\r\n\x05\x65vent\x18\x03 \x01(\t\x12\x0c\n\x04vote\x18\x04 \x01(\t\x12\x11\n\tbroadcast\x18\x05 \x01(\x08\"$\n\x13TransactionResponse\x12\r\n\x05valid\x18\x01 \x01(\x08\x32K\n\x0bTransaction\x12<\n\x0fsendTransaction\x12\x13.TransactionRequest\x1a\x14.TransactionResponseb\x06proto3'
 )
 
 
@@ -61,6 +61,13 @@ _TRANSACTIONREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='broadcast', full_name='TransactionRequest.broadcast', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -74,7 +81,7 @@ _TRANSACTIONREQUEST = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=21,
-  serialized_end=101,
+  serialized_end=120,
 )
 
 
@@ -105,8 +112,8 @@ _TRANSACTIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=103,
-  serialized_end=139,
+  serialized_start=122,
+  serialized_end=158,
 )
 
 DESCRIPTOR.message_types_by_name['TransactionRequest'] = _TRANSACTIONREQUEST
@@ -136,8 +143,8 @@ _TRANSACTION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=141,
-  serialized_end=216,
+  serialized_start=160,
+  serialized_end=235,
   methods=[
   _descriptor.MethodDescriptor(
     name='sendTransaction',
