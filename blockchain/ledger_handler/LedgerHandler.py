@@ -1,6 +1,6 @@
 import sqlite3
 
-from mining.MinerAlgorithm import ProofOfLottery
+from mining.mining_utils.ProofOfLottery import ProofOfLottery
 
 
 class LedgerHandler:

@@ -4,6 +4,8 @@ from time import sleep
 
 from comunication.blocks.BlockMiningObject import BlockMiningObject
 from comunication.grpc_clients_handlers.BlockMiningHandlerClient import BlockMiningHandlerClient
+from comunication.grpc_comunication_handlers.TransactionServiceHandler import TransactionService
+#from mining.mining_utils.ProofOfLottery import ProofOfLottery
 from mining.mining_utils.ProofOfLottery import ProofOfLottery
 
 

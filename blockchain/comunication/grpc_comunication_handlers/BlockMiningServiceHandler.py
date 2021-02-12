@@ -11,7 +11,7 @@ from threading import Thread
 # Proto generated stuffs
 from comunication.blocks.BlockMiningObject import BlockMiningObject
 from comunication.grpc_protos import BlockMining_pb2_grpc, BlockMining_pb2
-from mining.MinerAlgorithm import ProofOfLottery
+from mining.mining_utils.ProofOfLottery import ProofOfLottery
 
 
 class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
