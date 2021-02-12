@@ -43,18 +43,18 @@ class BlockMiningService(BlockMining_pb2_grpc.BlockMiningServicer):
         # Create block mining object
         blockMiningRequestObject = BlockMiningObject(time=request.time,
                                                      seed=request.seed,
-                                                     transactions_list=request.transactions_list,
-                                                     block_hash=request.block_hash,
-                                                     lottery_number=request.lottery_number,
-                                                     miner_address=request.miner_address,
-                                                     previous_block_hash=request.previous_block_hash)
+                                                     transactionsList=request.transactions_list,
+                                                     blockHash=request.block_hash,
+                                                     lotteryNumber=request.lottery_number,
+                                                     minerAddress=request.miner_address,
+                                                     previousBlockHash=request.previous_block_hash)
 
         # Verify block mining
-        verified = ProofOfLottery.verify(seed=request.seed,
-                                         receivedTransactionsStringify=request.transactions_list,
-                                         blockHash=request.block_hash,
-                                         lotteryFunctionBlockHash=request.lottery_number,
-                                         minerAddress=request.miner_address,
+        verified = ProofOfLottery.verify(seed=blockMiningRequestObject.seed,
+                                         receivedTransactionsStringify=blockMiningRequestObject.transactionsList,
+                                         blockHash=blockMiningRequestObject.blockHash,
+                                         lotteryFunctionBlockHash=blockMiningRequestObject.lotteryNumber,
+                                         minerAddress=blockMiningRequestObject.minerAddress,
                                          hashedMinerAddress=blockMiningRequestObject.hashedMinerAddress)
 
         # Append to list of received if is correct

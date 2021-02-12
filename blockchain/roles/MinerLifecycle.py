@@ -12,6 +12,7 @@ from comunication.grpc_comunication_handlers.GrpcServerHandler import GrpcServer
 from mining.MinerAlgorithm import MinerAlgorithm
 
 # Mining current status
+from mining.mining_notifications.MiningNotificationsHandler import MiningNotificationsHandler
 from mining.runtime_mining_status.MiningStatus import MiningStatus
 from mining.runtime_mining_status.MiningStatusHandler import MiningStatusHandler
 
@@ -26,13 +27,13 @@ def minerLifecycle(minerConfiguration):
     # Init shared data
     miningStatus = MiningStatus(
         minerConfiguration=minerConfiguration,
-        receivedTransactions=[],
         miningStartThreshold=3
     )
 
     # Init thread stuffs
     lock = RLock()
     canStartMiningCondition = Condition(lock)
+    canStartStoringInLedgerCondition = Condition(lock)
 
     # Workers
     # Server thath handle grpc requests
@@ -45,7 +46,8 @@ def minerLifecycle(minerConfiguration):
     miningStatusReporter = MiningStatusHandler(
         lock=lock,
         miningStatus=miningStatus,
-        canStartMiningCondition=canStartMiningCondition
+        canStartMiningCondition=canStartMiningCondition,
+        canStartStoringInLedgerCondition=canStartStoringInLedgerCondition
     )
 
     # Execute mining
@@ -55,7 +57,15 @@ def minerLifecycle(minerConfiguration):
         canStartMiningCondition=canStartMiningCondition
     )
 
+    # Select what is the "best" mining notification that must be stored in ledger
+    miningNotificationsHandler = MiningNotificationsHandler(
+        miningStatus=miningStatus,
+        lock=lock,
+        canStartStoringInLedgerCondition=canStartStoringInLedgerCondition
+    )
+
     # Run every thread ot miner lifecycle
     grpcServerHandler.start()
     miningStatusReporter.start()
     minerAlgorithm.start()
+    miningNotificationsHandler.start()

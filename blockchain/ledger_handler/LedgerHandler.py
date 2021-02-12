@@ -73,18 +73,18 @@ class LedgerHandler:
         """
 
         # De stringify block hash
-        transactionObjectsList = ProofOfLottery.deStringifyTransactionString(block.transactions_list)
+        transactionObjectsList = ProofOfLottery.deStringifyTransactionString(block.transactionsList)
 
         # Get previous block hash
-        block.previous_block_hash = self.getPreviousBlockHash().fetchone()[0]
+        block.previousBlockHash = self.getPreviousBlockHash().fetchone()[0]
 
         #  Query for add block
         addBlockQuery = f"INSERT INTO Block(hash, seed, miner_address, lottery_number, previous_hash, timestamp_block) "\
-                f"VALUES ('{block.block_hash}',"\
+                f"VALUES ('{block.blockHash}',"\
                 f"{block.seed},"\
-                f"'{block.miner_address}',"\
-                f"'{block.lottery_number}',"\
-                f"'{block.previous_block_hash}',"\
+                f"'{block.minerAddress}',"\
+                f"'{block.lotteryNumber}',"\
+                f"'{block.previousBlockHash}',"\
                 f"'{block.time}')"
 
         self.databaseCursor.execute(addBlockQuery)
@@ -95,7 +95,7 @@ class LedgerHandler:
                                   f"VALUES ('{transaction.time}', '{transaction.event}', " \
                                   f"{transaction.vote}, " \
                                   f"'{transaction.address}', " \
-                                  f"'{block.block_hash}')"
+                                  f"'{block.blockHash}')"
 
             self.databaseCursor.execute(addTransactionQuery)
 

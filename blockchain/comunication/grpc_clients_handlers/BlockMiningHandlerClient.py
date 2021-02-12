@@ -15,9 +15,7 @@ class BlockMiningHandlerClient:
 
     def __init__(self):
         """
-            Constructor with parameters
-
-            :param lock: Re entrant lock used to handle shared data
+        Constructor with parameters
         """
         logging.basicConfig()
 
