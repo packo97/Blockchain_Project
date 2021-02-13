@@ -2,7 +2,6 @@ from threading import Thread
 
 from time import sleep
 
-#from mining.MinerAlgorithm import ProofOfLottery
 from ledger_handler.LedgerHandler import LedgerHandler
 from mining.mining_utils.ProofOfLottery import ProofOfLottery
 
@@ -30,21 +29,28 @@ class MiningNotificationsHandler(Thread):
         # Init thread
         Thread.__init__(self)
 
-    # def uniqueList(self, a):
-    #     b = []
-    #     for i in a:
-    #         if i not in b:
-    #             b.append(i)
-    #     return b
     def stringifyTransactionsListsHasSameEvents(self,
                                                 transactionList1,
                                                 transactionList2):
+        """
+        Verify if two transaction lists (expressed as string) contain
+        the same events
+
+        :param transactionList1: First transaction list
+        :param transactionList2: Second transaction list
+
+        :return: True if events are the same, False otherwise
+        """
+
+        # destringify transactions list
         transactionList1 = ProofOfLottery.deStringifyTransactionString(transactionList1)
         transactionList2 = ProofOfLottery.deStringifyTransactionString(transactionList2)
 
+        # get events from transaction list and sort them
         events1 = [transaction.event for transaction in transactionList1]
         events1.sort()
 
+        # get events from transaction list and sort them
         events2 = [transaction.event for transaction in transactionList2]
         events2.sort()
 
@@ -53,6 +59,15 @@ class MiningNotificationsHandler(Thread):
     def transactionListIsAlreadyInTheGroup(self,
                                            transactionList,
                                            blockMiningObjectsGroup):
+        """
+        Verify if a transaction list is already contained in a group
+        of block mining requests
+
+        :param transactionList: Transaction list to check
+        :param blockMiningObjectsGroup: Group of block mining requests
+
+        :return: True if transaction list is in the group, False otherwise
+        """
 
         alreadyInTheGroup = False
 
@@ -63,27 +78,18 @@ class MiningNotificationsHandler(Thread):
         return alreadyInTheGroup
 
     def run(self):
+
         while True:
+
             with self.lock:
+
                 # All mining notifications (made by me + made by others).
                 # NOTE they are already verified
                 allMiningNotifications = self.miningStatus.blockMiningNotificationsMinedByMe + \
                                          self.miningStatus.blockMiningNotifications
 
-
-                # If there is at least 1 mining notification
-
-                # print("BY ME\n")
-                # for t in self.miningStatus.blockMiningNotificationsMinedByMe:
-                #     print(t)
-                # print("OTHER\n")
-                # for t in self.miningStatus.blockMiningNotifications:
-                #     print(t)
-                # print("\n")
-
-
-
-
+                # check if all notifications arrived are in the same number of my known hosts
+                # (each miner including me made a mining notification)
                 if len(allMiningNotifications) == len(self.miningStatus.minerConfiguration.getKnownHosts()) + 1:
 
                     # Make groups of lists of transactions
@@ -97,7 +103,7 @@ class MiningNotificationsHandler(Thread):
                                 if not self.transactionListIsAlreadyInTheGroup(miningNotification1.transactionsList, groups):
                                     groups.append(miningNotification1)
 
-
+                    # find the winner block checking the block with less seed
                     winnerBlocks = []
                     for miningNotification1 in groups:
                         winnerBlock = miningNotification1
@@ -108,22 +114,17 @@ class MiningNotificationsHandler(Thread):
                                     winnerBlock = miningNotification2
                         winnerBlocks.append(winnerBlock)
 
-                    #print(f"{winnerBlocks}\n")
-                    # Store
+                    # Store the winner block in the ledger
                     if len(winnerBlocks) > 0:
                         ledgerHandler = LedgerHandler(self.miningStatus.minerConfiguration.getLedgerDatabasePath())
                         for block in winnerBlocks:
-                            #print(f"{block} STORED")
                             ledgerHandler.insertBlockInLedger(block)
 
-                        # Clean mining notifications
-                        # Block mining notifications
+                        # Block mining notifications cleaning
                         self.miningStatus.blockMiningNotifications.clear()
-                        #self.miningStatus.anotherMinerHaveMined = False
 
-                        # Our block mining notifications
+                        # Our block mining notifications cleaning
                         self.miningStatus.blockMiningNotificationsMinedByMe.clear()
-                        #self.miningStatus.iHaveMined = False
 
                     # Clean winner blocks
                     winnerBlocks.clear()

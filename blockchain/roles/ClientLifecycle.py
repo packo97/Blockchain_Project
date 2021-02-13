@@ -2,11 +2,9 @@
 Handle the lifecycle of a client
 """
 
-# Utils modules
 import sys
 from datetime import datetime
 
-# Transaction maker
 from comunication.grpc_clients_handlers.TransactionHandlerClient import TransactionHandlerClient
 
 
@@ -20,7 +18,7 @@ def clientLifecycle(clientConfiguration, event, vote, address):
     :param address: Address (address of blockchain NOT ip) of voter
     """
 
-    # Get informations
+    # Get information
     print(f"Run as a client...\n\nConfiguration:\n{clientConfiguration}\n")
 
     # Count the number of sending transactions
@@ -49,8 +47,8 @@ def clientLifecycle(clientConfiguration, event, vote, address):
                   f"are not connected to "
                   f"network or your known host in {sys.argv[1]} is unreachable", file=sys.stderr)
 
-    # Verify if transaction is sented to AT LEAST one host
-    if sendingTransactionsCount > 0:
+    # Verify if transaction is sent to AT LEAST 1 host
+    if sendingTransactionsCount >= 0:
         print("Transaction sent in the network!")
         exit(0)
 

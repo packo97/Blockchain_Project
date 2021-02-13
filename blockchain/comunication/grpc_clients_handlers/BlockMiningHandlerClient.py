@@ -2,7 +2,6 @@ import grpc
 
 from comunication.grpc_protos import BlockMining_pb2, BlockMining_pb2_grpc
 
-from concurrent import futures
 import logging
 
 
@@ -15,7 +14,7 @@ class BlockMiningHandlerClient:
 
     def __init__(self):
         """
-        Constructor with parameters
+        Constructor without parameters
         """
         logging.basicConfig()
 
@@ -30,7 +29,7 @@ class BlockMiningHandlerClient:
                                 host):
         """
         Used by a miner to told to other miners that
-        "he has winning mineing game"
+        "he has winning mining game"
 
         :param time: Time in which block is mined
         :param seed: seed used in proof of lottery

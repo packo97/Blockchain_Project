@@ -1,4 +1,3 @@
-# Utils
 import json
 import sys
 

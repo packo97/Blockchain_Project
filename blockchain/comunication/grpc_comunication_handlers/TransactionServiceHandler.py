@@ -1,16 +1,5 @@
-# Utils stuffs
-from concurrent import futures
-import logging
 from random import randint
 
-from time import sleep
-
-import grpc
-from threading import Thread, RLock
-import asyncio
-import sys
-
-# Proto generated files
 from comunication.grpc_clients_handlers.TransactionHandlerClient import TransactionHandlerClient
 from comunication.grpc_protos import Transaction_pb2_grpc, Transaction_pb2
 from comunication.transactions.TransactionObject import TransactionObject
@@ -61,12 +50,13 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
                 # Increasing p, means decreasing probability to have True
                 # We choose to manage p in this way to avoid infinite loop!
                 p = 5
+                useBroadcast = randint(1, 10) >= p
                 responseStatus = TransactionHandlerClient.sendTransaction(time=requestTransaction.time,
                                                                           event=requestTransaction.event,
                                                                           vote=requestTransaction.vote,
                                                                           address=requestTransaction.address,
                                                                           host=minerHostAddress,
-                                                                          broadcast=(randint(1, 10) >= p))
+                                                                          broadcast=useBroadcast)
 
             # In case of exception do nothing
             except Exception:
@@ -108,7 +98,7 @@ class TransactionService(Transaction_pb2_grpc.TransactionServicer):
         # already in the ledger)
         totalTransactions = alreadyMinedByOthersButNotInLedger + alreadyMinedByMeButNotInLedger + self.miningStatus.receivedTransactions
 
-        # If this transaction is already sended
+        # If this transaction is already sent
         alreadySentToMiner = requestTransaction in totalTransactions
 
         # Already voter for event. You CANNOT send (e,vote x) , (e, vote y)

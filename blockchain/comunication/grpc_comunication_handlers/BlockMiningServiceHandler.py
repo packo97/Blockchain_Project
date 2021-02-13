@@ -1,14 +1,3 @@
-# Utils stuffs
-import hashlib
-
-import grpc
-
-from concurrent import futures
-import logging
-
-from threading import Thread
-
-# Proto generated stuffs
 from comunication.blocks.BlockMiningObject import BlockMiningObject
 from comunication.grpc_protos import BlockMining_pb2_grpc, BlockMining_pb2
 from mining.mining_utils.ProofOfLottery import ProofOfLottery

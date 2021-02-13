@@ -2,16 +2,12 @@
 Handle the lifecycle of a miner
 """
 
-# Utils stuffs
 from threading import RLock, Condition
 
-# Transaction maker
 from comunication.grpc_comunication_handlers.GrpcServerHandler import GrpcServerHandler
 
-# Mining algorithm
 from mining.MinerAlgorithm import MinerAlgorithm
 
-# Mining current status
 from mining.mining_notifications.MiningNotificationsHandler import MiningNotificationsHandler
 from mining.runtime_mining_status.MiningStatus import MiningStatus
 from mining.runtime_mining_status.MiningStatusHandler import MiningStatusHandler
@@ -35,7 +31,7 @@ def minerLifecycle(minerConfiguration):
     canStartMiningCondition = Condition(lock)
 
     # Workers
-    # Server thath handle grpc requests
+    # Server that handle grpc requests
     grpcServerHandler = GrpcServerHandler(
         miningStatus=miningStatus,
         lock=lock

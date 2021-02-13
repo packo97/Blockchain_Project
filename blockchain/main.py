@@ -1,11 +1,8 @@
-# Utils modules
 import sys
 
-# Handle json configuration file
 from comunication.transactions.validation.TransactionValidator import TransactionValidator
 from configuration_handler.Config import Config
 
-# Lifecycles
 from roles.ClientLifecycle import clientLifecycle
 from roles.MinerLifecycle import minerLifecycle
 

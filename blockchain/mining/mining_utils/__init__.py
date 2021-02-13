@@ -1,5 +1,5 @@
 """
-All utils useful for mining.
+All utils useful for mining algorithm implementation.
 
-FOr example ProofOfLottery
+For example ProofOfLottery
 """

@@ -1,13 +1,11 @@
-# Cuncurrency stuff
 from concurrent import futures
 import logging
-from threading import Thread
 
-# Grpc Stuff
+from threading import Thread
 from comunication.grpc_protos import Transaction_pb2_grpc, BlockMining_pb2_grpc
+
 import grpc
 
-# Services
 from comunication.grpc_comunication_handlers.BlockMiningServiceHandler import BlockMiningService
 from comunication.grpc_comunication_handlers.TransactionServiceHandler import TransactionService
 

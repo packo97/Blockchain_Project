@@ -45,9 +45,9 @@ class BlockMiningObject:
 
         :return: Stringify version of block mining object
         """
-        return f"({self.minerAddress},{self.seed},{self.transactionsList})"
-        # return f"({self.time},{self.seed},{self.transactionsList},{self.blockHash}," \
-        #        f"{self.lotteryNumber},{self.minerAddress},{self.previousBlockHash})"
+
+        return f"({self.time},{self.seed},{self.transactionsList},{self.blockHash}," \
+               f"{self.lotteryNumber},{self.minerAddress},{self.previousBlockHash})"
 
     def __eq__(self, other):
         """
@@ -58,6 +58,7 @@ class BlockMiningObject:
 
         :return: If block mining objects are equal
         """
+
         return \
             self.time == other.time and \
             self.seed == other.seed and \

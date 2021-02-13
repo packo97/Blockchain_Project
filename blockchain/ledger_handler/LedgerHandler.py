@@ -101,8 +101,3 @@ class LedgerHandler:
 
         # Final commit
         self.connection.commit()
-
-    # ********** Useful operations for query blockchain (ex: view all transaction for a predefined event...) **********
-
-    def read(self):
-        pass

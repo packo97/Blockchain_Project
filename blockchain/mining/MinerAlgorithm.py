@@ -1,11 +1,9 @@
-# Utils stuffs
 from threading import Thread
 from time import sleep
 
 from comunication.blocks.BlockMiningObject import BlockMiningObject
 from comunication.grpc_clients_handlers.BlockMiningHandlerClient import BlockMiningHandlerClient
-from comunication.grpc_comunication_handlers.TransactionServiceHandler import TransactionService
-#from mining.mining_utils.ProofOfLottery import ProofOfLottery
+
 from mining.mining_utils.ProofOfLottery import ProofOfLottery
 
 
@@ -165,11 +163,3 @@ class MinerAlgorithm(Thread):
             # If i'm below threshold to mine
             if len(self.miningStatus.receivedTransactions) < self.miningStatus.miningStartThreshold:
                 self.miningStatus.canStartMining = False
-
-            # Remove block mining notifications
-            #self.miningStatus.blockMiningNotifications.clear()
-            #self.miningStatus.anotherMinerHaveMined = False
-
-            # Remove block mining notifications
-            #self.miningStatus.blockMiningNotificationsMinedByMe.clear()
-            #self.miningStatus.iHaveMined = False
