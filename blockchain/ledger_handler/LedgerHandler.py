@@ -101,3 +101,34 @@ class LedgerHandler:
 
         # Final commit
         self.connection.commit()
+
+    # ********** Useful operations for ledger viewer **********
+
+    def viewBlocks(self):
+        """
+        View all blocks
+
+        :return: All blocks in ledger
+        """
+
+        resultQuery = "SELECT hash, seed, miner_address, lottery_number, previous_hash, timestamp_block FROM Block"
+
+        result = self.databaseCursor.execute(resultQuery)
+
+        return result.fetchall()
+
+    def viewAllTransactionsByBlocks(self, blockHash):
+        """
+        View all transactions by block hash
+
+        :param blockHash: Block hash
+
+        :return: All transactions of blockHash
+        """
+
+        resultQuery = f"SELECT address, event, vote FROM 'Transaction' WHERE block_hash='{blockHash}'"
+
+        result = self.databaseCursor.execute(resultQuery)
+
+        return result.fetchall()
+
