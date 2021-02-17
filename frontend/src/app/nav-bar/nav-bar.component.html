@@ -1,0 +1,10 @@
+<p-tabMenu [model]="items"></p-tabMenu>
+
+<p-dialog header="AggiungiSondaggio" [(visible)]="displayAggiuntaSondaggio">
+    <span class="p-float-label">
+        <input id="input_nome" type="text" [(ngModel)]="nome" pInputText> 
+        <label for="input_nome-input">Nome</label>
+    </span>
+    <button pButton type="button" class="p-button-raised p-button-primary" label="Aggiungi Sondaggio" (click)=aggiungiSondaggio()></button>
+
+</p-dialog>

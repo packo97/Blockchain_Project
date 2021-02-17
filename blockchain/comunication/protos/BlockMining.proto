@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+/**
+  * Block Mining service. It permit to say that
+  * "A block is mined"
+ */
+service BlockMining {
+  /**
+    * Send Victory of Miner Game Notification
+   */
+  rpc sendVictoryNotification (BlockMiningRequest) returns (BlockMiningResponse);
+}
+
+
+
+/**
+  * Request that told us "A block is mined".
+ */
+message BlockMiningRequest {
+  string time = 1;
+  string seed = 2;
+  string transactions_list = 3;
+  string block_hash = 4;
+  string lottery_number = 5;
+  string miner_address = 6;
+  string previous_block_hash = 7;
+}
+
+
+/**
+  * Block response.
+  * It is sent by miners that approved or not
+  * the validation by the miner who send block
+  * mining request
+ */
+message BlockMiningResponse {
+  bool valid = 1;
+}

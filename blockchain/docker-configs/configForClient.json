@@ -1,0 +1,9 @@
+{
+    "role": "client",
+    "knownHosts": [
+        "1.0.0.11:50051",
+        "1.0.0.12:50052",
+        "1.0.0.14:50054"
+    ],
+    "address": "CLIENT_ADDRESS"
+}

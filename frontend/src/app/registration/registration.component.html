@@ -1,0 +1,26 @@
+<div class="p-grid">
+  <div class="p-col-2">1</div>
+  <div class="p-col-8">
+
+    <h1 align="center">VoteChain</h1>
+
+    <p-card>
+      <span class="p-float-label">
+        <input id="input_codice_fiscale" type="text" [(ngModel)]="codice_fiscale" pInputText> 
+        <label for="input_codice_fiscale-input">Codice Fiscale</label>
+      </span>
+      <span class="p-float-label">
+        <input id="input_matricola" type="text" [(ngModel)]="matricola" pInputText> 
+        <label for="input_matricola">Matricola</label>
+      </span>
+      <button pButton type="button" label="Registrati" (click)=registrati()></button>
+      
+    </p-card>
+    
+  </div>
+  <div class="p-col-2">3</div>
+</div>
+
+<p-toast key="notifica" position="bottom-right"></p-toast>
+
+

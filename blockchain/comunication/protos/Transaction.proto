@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+/**
+  * Transaction service. It permit to sen transactions
+ */
+service Transaction {
+  /**
+    * Send transaction function
+   */
+  rpc sendTransaction (TransactionRequest) returns (TransactionResponse);
+}
+
+
+
+/**
+  * Request of transaction. It is sended by client
+ */
+message TransactionRequest {
+  string time = 1;
+  string address = 2;
+  string event = 3;
+  string vote = 4;
+  bool broadcast = 5;
+}
+
+
+/**
+  * Transaction response. It is sended by miner
+ */
+message TransactionResponse {
+  bool valid = 1;
+}

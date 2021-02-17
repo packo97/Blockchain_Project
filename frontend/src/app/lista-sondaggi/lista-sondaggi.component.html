@@ -1,0 +1,9 @@
+<br>
+<p-card *ngFor="let sondaggio of lista_sondaggi">
+    <h2>{{sondaggio.nome}}</h2>
+    <p>{{sondaggio.scadenza}}</p>
+    <button pButton type="button" class="p-button-raised p-button-primary" label="Vota Sondaggio" (click)=votaSondaggio()></button>
+</p-card>
+<p *ngIf="lista_sondaggi.length == 0">Non ci sono sondaggi</p>
+
+<p-toast key="notifica" position="bottom-right"></p-toast>
