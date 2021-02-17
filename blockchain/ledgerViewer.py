@@ -15,14 +15,8 @@ if __name__ == '__main__':
         configFilePath = sys.argv[1]
         configuration = Config(configFilePath=configFilePath)
 
-        # Run as a Client
-        if configuration.getRole() == "client":
-            # A client must sent a vote with a valid vote and valid event
-            print("A client can't view ledger!", file=sys.stderr)
-
-        # Run as a Miner
-        if configuration.getRole() == "miner":
-            blockchainViewerLifecycle(ledgerPath=configuration.getLedgerDatabasePath())
+        # Run as viewer lifecycle
+        blockchainViewerLifecycle(ledgerPath=configuration.getLedgerDatabasePath())
 
     # Otherwise (we need a configuration file)
     else:
