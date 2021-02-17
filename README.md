@@ -96,8 +96,16 @@ RUN A SINGLE MINER
 * docker-compose up miner2
 ...
 
+RUN A SINGLE BLOCKCHAIN VIEWER
+* docker-compose up viewer1
+* docker-compose up viewer2
+...
+
 RUN SIMPLE CLIENT
 * docker-compose up client
+
+**NOTE** Viewers and miners **MUST HAVE** a common value in test environment
+because they must work on same ledger file!
 
 
 ### Generate genesis in ledger
@@ -110,21 +118,22 @@ VALUES ('656ffd143ab4f1d3074aa7db58feeb571a700824bd061f7f18d2b07b5be34f2c', 5231
 VALUES ('01/01/0001,00:00:00', 'genesis_event', 42, 'rodolfo_pasquale', '656ffd143ab4f1d3074aa7db58feeb571a700824bd061f7f18d2b07b5be34f2c')
 
 
-#### Run frontend
+# WORK IN PROCESS
+
+## Run frontend app
 
 **NOTE:** The frontend is **WORK IN PROCESS**
 1. docker build ./frontend -t blockchain_frontend:0.1
 2. docker run -it -p 4200:4200 -v $(pwd)/frontend:/usr/src/frontend-app --name frontend blockchain_frontend:0.1
 3. go to http://localhost:4200 and enjoy!
 
-<!-- ### Run frontend **AFTER** installation
-* docker start frontend --interactive
+## Interaction with OTHER BLOCKCHAINS
 
-### Generate new angular component (USING DOCKER)
-* docker exec -it frontend ng generate component component_name
-**NOTE**: if you have Angular installed or you have VS Code tools for angular
-you can make operations easier
+**NOTE:** This functionality is **WORK IN PROCESS**.
+We must add a field "extra" on our transaction and make the possibility to transaction with this "extra" field to have a different
+validation.
 
-### Install a dependencies for Angular
-1. docker exec -it frontend npm install --save dependency_name
-2. docker commit frontend blockchain_frontend:0.1 **IMPORTANT if you wan't rebuild image every time** -->
+Suppose that we want implement IOT. Iot must send in a transaction is content (for example *(WEIGHT;USER_ID)*) in extra field,
+and as event and vote *(IOT_EVENT;0)*.
+
+It apparently can go well, but it violate our first most important validation rule! (more votes for a singl event!)
