@@ -38,8 +38,9 @@ as a voting system for "the new topic of a company".
 * Every miner has it's own **LEDGER DATABASE**. This ledger database is a sqlite3 db (in the code you can see **ledger1.db**, ...).
 It contains transactions and blocks.
 
-**NOTE**: For more info, if you don't like python, docker and other nerdy stuffs, you can see the presentation (our "white paper").
-It is the file **Whitepaper.pdf**
+**NOTE**: For more info, if you don't like python, docker and other nerdy stuffs, you can see the presentation online:
+
+**https://docs.google.com/presentation/d/1bWnLYioXtPE3VMP3Oab_YL_SsuV1T61xaLW_F0YUOWQ/edit?usp=sharingf**
 
 
 ## Practice
@@ -133,7 +134,10 @@ VALUES ('01/01/0001,00:00:00', 'genesis_event', 42, 'rodolfo_pasquale', '656ffd1
 We must add a field "extra" on our transaction and make the possibility to transaction with this "extra" field to have a different
 validation.
 
-Suppose that we want implement IOT. Iot must send in a transaction is content (for example *(WEIGHT;USER_ID)*) in extra field,
+Suppose that we want implement IOT.
+
+IOT must send in a transaction is content (for example *(WEIGHT;USER_ID)*) in extra field,
 and as event and vote *(IOT_EVENT;0)*.
 
-It apparently can go well, but it violate our first most important validation rule! (more votes for a singl event!)
+It apparently can go well, but it violate our first most important validation rule!
+* **more votes for a singl event!**
