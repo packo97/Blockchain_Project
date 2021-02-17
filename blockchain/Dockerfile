@@ -6,6 +6,7 @@ WORKDIR /usr/src/blockchain-app
 
 # Copy all in working directory
 COPY . /usr/src/blockchain-app
+VOLUME [ "/usr/src/blockchain-app/docker-configs" ]
 
 # Install requirements
 RUN pip install -r requirements.txt

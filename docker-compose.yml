@@ -3,6 +3,8 @@ services:
 # Miner 1
   miner1:
     build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
     command: 'python main.py docker-configs/configForMiner1.json'
     ports: 
       - "50051:50051"
@@ -14,6 +16,8 @@ services:
 # Miner 2
   miner2:
     build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
     command: 'python main.py docker-configs/configForMiner2.json'
     ports: 
       - "50052:50052"
@@ -25,6 +29,8 @@ services:
 # Miner 3
   miner3:
     build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
     command: 'python main.py docker-configs/configForMiner3.json'
     ports: 
       - "50053:50053"
@@ -36,6 +42,8 @@ services:
 # Miner 4
   miner4:
     build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
     command: 'python main.py docker-configs/configForMiner4.json'
     ports: 
       - "50054:50054"
@@ -47,7 +55,9 @@ services:
 # Miner 5
   miner5:
     build: './blockchain'
-    command: 'python main.py docker-configs/configForMiner3.json'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
+    command: 'python main.py docker-configs/configForMiner5.json'
     ports: 
       - "50055:50055"
     stdin_open: true  # docker run -i
@@ -55,10 +65,52 @@ services:
     networks:
       my-blockchain-network:
         ipv4_address: '1.0.0.15'
+# Viewer 1
+  viewer1:
+    build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
+    command: 'python ledgerViewer.py docker-configs/configForMiner1.json'
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+    depends_on: 
+      - miner1
+# Viewer 2
+  viewer2:
+    build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
+    command: 'python ledgerViewer.py docker-configs/configForMiner2.json'
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+# Viewer 3
+  viewer3:
+    build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
+    command: 'python ledgerViewer.py docker-configs/configForMiner3.json'
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+# Viewer 4
+  viewer4:
+    build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
+    command: 'python ledgerViewer.py docker-configs/configForMiner4.json'
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
+# Viewer 5
+  viewer5:
+    build: './blockchain'
+    volumes: 
+      - "./blockchain/docker-configs:/usr/src/blockchain-app/docker-configs"
+    command: 'python ledgerViewer.py docker-configs/configForMiner5.json'
+    stdin_open: true  # docker run -i
+    tty: true         # docker run -t
 # Client (NOT IN LISTEN MODE)
   client:
     build: './blockchain'
-    command: 'python main.py docker-configs/configForClient.json b 10 & python main.py docker-configs/configForClient.json c 10 & python main.py docker-configs/configForClient.json d 10'
+    command: 'python main.py docker-configs/configForClient.json e2 10'
     stdin_open: true  # docker run -i
     tty: true         # docker run -t
     networks:
